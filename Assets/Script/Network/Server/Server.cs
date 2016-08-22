@@ -63,13 +63,13 @@ public class Server : MonoBehaviour {
 		string url = "http://minus-one.co.kr/penguin/insertMemberInfo.php";
 
 		WWWForm wform = new WWWForm();
-		wform.AddField("id", 123);
-		wform.AddField("password", 123);
-		wform.AddField("email_address", 123);
-		wform.AddField("nick_name", 123);
-		wform.AddField("is_admin", 123);
-		wform.AddField("regdate", 123);
-		wform.AddField("last_login", 123);
+		wform.AddField("id", "ThisIsID2");
+		wform.AddField("password", "Pass");
+		wform.AddField("nick_name", "ThisIsNickName");
+		wform.AddField("email_address", "email@google.com");
+		wform.AddField("is_admin", 1);
+		wform.AddField("regdate", "regdate");
+		//wform.AddField("last_login", "1");
 
 		WWW www = new WWW(url, wform);
 		StartCoroutine(WaitForRequest(www));

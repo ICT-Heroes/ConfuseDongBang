@@ -98,7 +98,7 @@ public class StrProtocol {
 
 
 	public static bool EqualName(string str, string parse) {
-		return str.param[0].Equals(parse);
+		return str.Equals(parse);
 	}
 }
 
