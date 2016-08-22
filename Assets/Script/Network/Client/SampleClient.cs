@@ -4,6 +4,7 @@ using PenguinModel;
 using UnityEngine.UI;
 using System;
 using System.Net;
+using ClientNetwork;
 
 public class SampleClient : MonoBehaviour{
 
@@ -21,10 +22,6 @@ public class SampleClient : MonoBehaviour{
 			//network.CreateSelf("sample", transform.position);
 		}
 	}
-	/*
-	public virtual void NetworkInit(params string[] param) {
-		
-	}*/
 
 
 	public void OnButtonTouched(){
@@ -34,7 +31,7 @@ public class SampleClient : MonoBehaviour{
 		string nickname;
 
 
-		HttpWebRequest header = new HttpWebRequest();
+
 		id = idComponent.text;
 		password = passwordComponent.text;
 		email = emailComponent.text;
@@ -43,6 +40,8 @@ public class SampleClient : MonoBehaviour{
 		string jsonString = JsonUtility.ToJson (member);
 
 		Debug.Log (jsonString);
+
+		MyNet.Send (jsonString);
 
 		Member member1 = JsonUtility.FromJson<Member>(jsonString);
 		//Debug.Log(member1.id);

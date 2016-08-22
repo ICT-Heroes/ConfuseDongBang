@@ -12,9 +12,9 @@ namespace PenguinModel
 			this.Password = password;
 			this.EmailAddress = emailAddress;
 			this.Nickname = nickname;
-			this.isAdmin = isAdmin;
-			this.regDate = regDate;
-			this.lastLogin = lastLogin;
+			this.IsAdmin = isAdmin;
+			this.RegDate = regDate;
+			this.LastLogin = lastLogin;
 		}
 		public string id;
 		private string Id{
@@ -36,10 +36,26 @@ namespace PenguinModel
 			get{ return emailAddress; } 
 			set{ emailAddress = value; }
 		}
-		public Vector3 position{ get; set;}
-		public bool isAdmin{ get; set; }
-		public string regDate{ get; set; }
-		public string lastLogin{get;set;}
+		private Vector3 position;
+		public Vector3 Position { 
+			get{ return position; }
+			set{ position = value; }
+		}
+		private bool isAdmin;
+		public bool IsAdmin { 
+			get{ return isAdmin; } 
+			set{ isAdmin = value; }
+		}
+		private string regDate;
+		public string RegDate {
+			get{ return regDate; } 
+			set{ regDate = value; }
+		}
+		private string lastLogin;
+		public string LastLogin {
+			get{ return lastLogin; }
+			set{ lastLogin = value; }
+		}
 	}
 
 

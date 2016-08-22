@@ -48,17 +48,8 @@ namespace ClientNetwork {
 		/// 서버에게 어떤 메세지를 보내고 싶을 때 사용한다.
 		/// </summary>
 		/// <param name="message"></param>
-		public static void Send(ClientString message) {
-			StringWriter.buffer.AddLast(message);
-		}
-
-		/// <summary>
-		/// 서버에게 어떤 메세지를 보내고 싶을 때 사용한다.
-		/// </summary>
-		/// <param name="message"></param>
 		public static void Send(string message) {
-			ClientString str = new ClientString(message);
-			StringWriter.buffer.AddLast(str);
+			StringWriter.buffer.Enqueue(message);
 		}
 
 
@@ -66,7 +57,7 @@ namespace ClientNetwork {
 		/// 서버와의 연결을 그만두고 싶을 때 사용한다.
 		/// </summary>
 		public static void Stop() {
-			ClientString str = new ClientString(StrProtocol.Flow.Exit);
+			string str = StrProtocol.Flow.Exit + "\r\n";
 			Send(str);
 		}
 
@@ -76,7 +67,7 @@ namespace ClientNetwork {
 	/// 받은 NetString 을 저장하는 곳
 	/// </summary>
 	class Received {
-		public static MyQueue<ClientString> buffer = new MyQueue<ClientString>();
+		public static Queue<string> buffer = new Queue<string>();
 	}
 
 	/// <summary>
@@ -89,13 +80,13 @@ namespace ClientNetwork {
 
 		public static bool isServerRun = true;
 
-		public static void _SendString(ClientString message) {
+		public static void _SendString(string message) {
 			try {
 				if (client.Connected) {
 					//str = Console.ReadLine() + "\r\n";
-					byte[] data = Encoding.UTF8.GetBytes(message.GetString() + "\r\n");
+					byte[] data = Encoding.UTF8.GetBytes(message + "\r\n");
 					writeStream.Write(data, 0, data.Length);
-					if (message.param[0].Equals(StrProtocol.Flow.Exit)) {
+					if (message.Equals(StrProtocol.Flow.Exit + "\r\n")) {
 						isServerRun = false;
 						client.Close();
 					}
@@ -143,7 +134,7 @@ namespace ClientNetwork {
 					//if (str.Equals("exit")) break;
 					string reading = reader.ReadLine();
 					Console.WriteLine(reading);
-					Received.buffer.Push(ClientString.Get(reading));
+					Received.buffer.Enqueue(reading);
 				}
 			} catch (Exception e) {
 				Console.WriteLine(e.ToString());
@@ -162,56 +153,14 @@ namespace ClientNetwork {
 	/// 넣자마자 서버에게 전송된다.
 	/// </summary>
 	class StringWriter {
-		public static LinkedList<ClientString> buffer = new LinkedList<ClientString>();
+		public static Queue<string> buffer = new Queue<string>();
 
 		public void SendString() {
 			while (_MyNet.isServerRun) {
 				if (buffer.Count > 0) {
-					ClientString str = buffer.ElementAt(0);
-					buffer.RemoveFirst();
-					//str을 보내야됨
-					_MyNet._SendString(str);
+					_MyNet._SendString(buffer.Dequeue());
 				}
-				Thread.Sleep(1);
 			}
-		}
-	}
-
-	public class ClientString {
-		public int id;
-		public string[] param;
-
-		public string GetString() {
-			string ret = id + "";
-			if (param != null) for (int i = 0; i < param.Length; i++) ret += "," + param[i];
-			return ret + ";";
-		}
-		public static ClientString Get(string str) {
-			char[] sp = new char[2];
-			sp[0] = ','; sp[1] = ';';
-			string[] strs = str.Split(sp);
-			return new ClientString(int.Parse(strs[0]), strs);
-		}
-		public ClientString(int id) {
-			this.id = id;
-			this.param = null;
-		}
-		public ClientString(int id, string[] strs) {
-			this.id = id;
-			this.param = new string[strs.Length - 1];
-			for (int i = 1; i < param.Length; i++)
-				this.param[i - 1] = strs[i];
-		}
-
-		public ClientString() {
-			this.id = MyNet.myId;
-			this.param = null;
-		}
-		public ClientString(params string[] strs) {
-			this.id = MyNet.myId;
-			this.param = new string[strs.Length];
-			for (int i = 0; i < param.Length; i++)
-				this.param[i] = strs[i];
 		}
 	}
 
