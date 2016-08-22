@@ -97,23 +97,8 @@ public class StrProtocol {
 
 
 
-	public static bool EqualName(ServerNetwork.ServerString str, string parse) {
+	public static bool EqualName(string str, string parse) {
 		return str.param[0].Equals(parse);
-	}
-}
-
-class MyQueue<Tem> {
-	public LinkedList<Tem> tem = new LinkedList<Tem>();
-	public bool IsEmpty() {
-		return tem.Count <= 0;
-	}
-	public Tem Pop() {
-		Tem ret = tem.First();
-		tem.RemoveFirst();
-		return ret;
-	}
-	public void Push(Tem t) {
-		tem.AddLast(t);
 	}
 }
 

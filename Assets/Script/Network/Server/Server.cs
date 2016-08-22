@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+
+using System.Collections.Generic;
 
 using ServerNetwork;
 
@@ -12,6 +15,7 @@ public class Server : MonoBehaviour {
 	public static Server instance;
 
 	void Start() {
+		URLStart();
 		instance = this;
 		MyNet.Start();
 	}
@@ -29,18 +33,10 @@ public class Server : MonoBehaviour {
 
 
 	private void Decode() {
-		while (!Received.strs.IsEmpty()) {
-			ServerString str = Received.strs.Pop();
-			Debug.Log("str.param[1] : " + str.param[1] + ", str : " + str.GetString());
-			switch (str.param[1]) {
-				case StrProtocol.State.Create:
-					ServerString newStr = new ServerString(str.param);
-					MyNet.SendAll(newStr);
-					break;
-
-				case StrProtocol.State.Position:
-					ServerString newStr2 = new ServerString(str.param);
-					MyNet.SendAll(newStr2);
+		while (Received.strs.Count > 0) {
+			string str = Received.strs.Dequeue();
+			switch (str) {
+				case "":
 					break;
 			}
 		}
@@ -62,6 +58,32 @@ public class Server : MonoBehaviour {
 		get { return instance.textState.text; }
 		set { if (value != null) instance.textState.text = value; }
 	}
+
+	public void URLStart() {
+		string url = "http://minus-one.co.kr/penguin/insertMemberInfo.php";
+
+		WWWForm wform = new WWWForm();
+		wform.AddField("id", 123);
+		wform.AddField("password", 123);
+		wform.AddField("email_address", 123);
+		wform.AddField("nick_name", 123);
+		wform.AddField("is_admin", 123);
+		wform.AddField("regdate", 123);
+		wform.AddField("last_login", 123);
+
+		WWW www = new WWW(url, wform);
+		StartCoroutine(WaitForRequest(www));
+	}
+
+	IEnumerator WaitForRequest(WWW www) {
+		yield return www;
+
+		if (www.error == null) {
+			Debug.Log("WWW OK! : " + www.text);
+		} else {
+			Debug.Log("WWW Error : " + www.error);
+		}
+	}
 }
 
 
@@ -76,8 +98,8 @@ public class Server : MonoBehaviour {
 ///				네트워크가 동작하는 쓰레드에서만 알 수 있다.
 /// </summary>
 class LocalDelegate {
-	public static MyQueue<Param.CreatePlayer> createPlayer = new MyQueue<Param.CreatePlayer>();
-	public static MyQueue<Param.Login> login = new MyQueue<Param.Login>();
+	public static Queue<Param.CreatePlayer> createPlayer = new Queue<Param.CreatePlayer>();
+	public static Queue<Param.Login> login = new Queue<Param.Login>();
 }
 
 public class Param {

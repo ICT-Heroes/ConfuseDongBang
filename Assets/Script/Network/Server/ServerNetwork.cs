@@ -15,27 +15,27 @@ using UnityEngine.UI;
 
 namespace ServerNetwork {
 	public class Print {
-		private static MyQueue<string> debug = new MyQueue<string>();
-		private static MyQueue<string> state = new MyQueue<string>();
+		private static Queue<string> debug = new Queue<string>();
+		private static Queue<string> state = new Queue<string>();
 
 		public static string Debug {
 			get {
-				if (debug.IsEmpty()) return null;
-				else return debug.Pop();
+				if (debug.Count > 0) return debug.Dequeue();
+				else return "";
 			}
 			set {
-				debug.Push(value);
+				debug.Enqueue(value);
 			}
 
 		}
 
 		public static string State {
 			get {
-				if (state.IsEmpty()) return null;
-				else return state.Pop();
+				if (state.Count > 0) return state.Dequeue();
+				else return "";
 			}
 			set {
-				state.Push(value);
+				state.Enqueue(value);
 			}
 		}
 	}
@@ -46,8 +46,8 @@ namespace ServerNetwork {
 		/// tcp 로 모든 클라이언트에게 보내고 싶을 때 사용.
 		/// </summary>
 		/// <param name="str"></param>
-		public static void SendAll(ServerString str) {
-			StringWriter.messageBuffer.AddLast(str);
+		public static void SendAll(string str) {
+			StringWriter.messageBuffer.Enqueue(str);
 		}
 
 		/// <summary>
@@ -55,7 +55,7 @@ namespace ServerNetwork {
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="str"></param>
-		public static void Send(int id, ServerString str) {
+		public static void Send(int id, string str) {
 			StringWriter.SendForId(id, str);
 		}
 
@@ -77,7 +77,7 @@ namespace ServerNetwork {
 	}
 
 	class Received {
-		public static MyQueue<ServerString> strs = new MyQueue<ServerString>();
+		public static Queue<string> strs = new Queue<string>();
 	}
 
 	/// <summary>
@@ -128,7 +128,7 @@ namespace ServerNetwork {
 				bID[id] = false;
 		}
 
-		public static void SendClients(ServerString message) {
+		public static void SendClients(string message) {
 
 		}
 
@@ -198,12 +198,9 @@ namespace ServerNetwork {
 				_MyNet.isClientOver = true;
 				while (true) {
 					//클라이언트가 보내주는 것을 받는 곳.
-					ServerString str = ServerString.Get(reader.ReadLine());
-					str.id = id;
-					if (str.param[0].Equals(StrProtocol.Flow.Exit)) break;
-					Received.strs.Push(str);
-					Debug.Log(str.GetString());
-					Thread.Sleep(1);
+					string str = reader.ReadLine();
+					if (str.Equals(StrProtocol.Flow.Exit)) break;
+					Received.strs.Enqueue(str);
 				}
 			} catch (Exception e) {
 				Debug.Log(e.ToString());
@@ -229,7 +226,7 @@ namespace ServerNetwork {
 	/// 넣자마자 모든 client, 혹은 특정 client 에게 전송된다.
 	/// </summary>
 	class StringWriter {
-		public static LinkedList<ServerString> messageBuffer = new LinkedList<ServerString>();
+		public static Queue<string> messageBuffer = new Queue<string>();
 
 		//어디선가 쓰레드로 돌림.
 		public void SendString() {
@@ -237,8 +234,7 @@ namespace ServerNetwork {
 				//Thread.Sleep(1);
 				if (ClientSet.clients.Count > 0) {
 					if (messageBuffer.Count > 0) {
-						ServerString str = messageBuffer.ElementAt(0);
-						messageBuffer.RemoveFirst();
+						string str = messageBuffer.Dequeue();
 						for (int i = 0; i < ClientSet.clients.Count; i++) {
 							ClientSet.clients.ElementAt(i).Push(str);
 						}
@@ -248,7 +244,7 @@ namespace ServerNetwork {
 		}
 
 		//특정 id 의 sender 에게만 보내고 싶을 때,
-		public static void SendForId(int id, ServerString message) {
+		public static void SendForId(int id, string message) {
 			for (int i = 0; i < ClientSet.clients.Count; i++) {
 				if (ClientSet.clients.ElementAt(i).GetId() == id) {
 					ClientSet.clients.ElementAt(i).Push(message);
@@ -290,7 +286,7 @@ namespace ServerNetwork {
 
 	class TcpSender {
 		private string hostAddress = "localhost";
-		public LinkedList<ServerString> localSendBuffer = new LinkedList<ServerString>();
+		public Queue<string> localSendBuffer = new Queue<string>();
 		private bool exit = false;
 		private TcpClient client = null;    //원래 있는 클래스
 		private NetworkStream writeStream = null;
@@ -317,21 +313,20 @@ namespace ServerNetwork {
 			return id;
 		}
 
-		public void Push(ServerString message) {
+		public void Push(string message) {
 			if (localSendBuffer.Count < 1000) {
-				localSendBuffer.AddLast(message);
+				localSendBuffer.Enqueue(message);
 			}
 		}
 
-		private ServerString Pop() {
+		private string Pop() {
 			if (localSendBuffer.Count != 0) {
-				ServerString str = localSendBuffer.ElementAt(0);
-				localSendBuffer.RemoveFirst();
+				string str = localSendBuffer.Dequeue();
 				return str;
 			}
 
 			//종료시키는 스트링
-			ServerString ret = new ServerString(-10, "exit");
+			string ret = StrProtocol.Flow.Exit + "\r\n";
 			return ret;
 		}
 
@@ -348,17 +343,17 @@ namespace ServerNetwork {
 
 				//클라이언트에게 아이디를 보내줌
 				//클라이언트는 받은 아이디를 자신의 아이디로 세팅함.
-				ServerString sendString = new ServerString(id, StrProtocol.Login.SetID, id + "");
-				string str = sendString.GetString() + "\r\n";
+
+				string str = "yourIDis100" + "\r\n";
 				byte[] data = Encoding.UTF8.GetBytes(str);
 				writeStream.Write(data, 0, data.Length);
 
 				while (!exit) {
 					if (!IsEmpty()) {
-						str = Pop().GetString() + "\r\n";
+						str = Pop() + "\r\n";
 						data = Encoding.UTF8.GetBytes(str);
 						writeStream.Write(data, 0, data.Length);
-						if (str.Equals("-10,exit;\r\n")) {
+						if (str.Equals(StrProtocol.Flow.Exit + "\r\n")) {
 							exit = true;
 						}
 					}
@@ -376,40 +371,6 @@ namespace ServerNetwork {
 			}
 		}
 	}
-
-	public class ServerString {
-		public int id;
-		public string[] param;
-
-		public string GetString() {
-			string ret = id + "";
-			if (param != null) for (int i = 0; i < param.Length; i++) ret += "," + param[i];
-			return ret + ";";
-		}
-		public static ServerString Get(string str) {
-			char[] sp = new char[2];
-			sp[0] = ','; sp[1] = ';';
-			string[] strs = str.Split(sp);
-			return new ServerString(strs);
-		}
-		public ServerString(int id) {
-			this.id = id;
-			this.param = null;
-		}
-		public ServerString(string[] strs) {
-			this.id = int.Parse(strs[0]);
-			this.param = new string[strs.Length - 1];
-			for (int i = 1; i < param.Length; i++)
-				this.param[i - 1] = strs[i];
-		}
-		public ServerString(int id, params string[] strs) {
-			this.id = id;
-			param = new string[strs.Length];
-			for (int i = 0; i < param.Length; i++)
-				param[i] = strs[i];
-		}
-	}
-
 
 	public class ReceiveBuffer {
 		//인풋이 들어오면 여기에 그 값이 저장되어있음
