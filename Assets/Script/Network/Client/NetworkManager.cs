@@ -15,13 +15,10 @@ public class NetworkManager : MonoBehaviour {
 	/// 싱글톤이다.
 	/// </summary>
 	public static NetworkManager instance;
-	public List<ClientObject> createObjectes = new List<ClientObject>();
 
 	// Use this for initialization
 	void Start () {
-		for (int i = 0; i < prefabs.Length; i++) {
-			objects.Add(prefabs[i].GetComponent<FieldObject>().network.key, prefabs[i]);
-		}
+
 		instance = this;
 		MyNet.serverAddress = address;
 		MyNet.Start();
@@ -35,38 +32,9 @@ public class NetworkManager : MonoBehaviour {
 	/// 해석
 	/// </summary>
 	private void SeaStone() {
-		while (!ClientNetwork.Received.buffer.IsEmpty()) {
-			ClientNetwork.ClientString str = ClientNetwork.Received.buffer.Pop();
+		while (ClientNetwork.Received.buffer.Count > 0) {
+			string str = ClientNetwork.Received.buffer.Dequeue();
 
-			switch (str.param[0]) {
-				case StrProtocol.State.Create:
-					CreateObject(str.id, str.param[1], float.Parse(str.param[2]), float.Parse(str.param[3]), float.Parse(str.param[4]), RemainStr(str.param, 5));
-					break;
-				case StrProtocol.Login.SetID:
-					ClientNetwork.MyNet.myId = str.id;
-					break;
-				case StrProtocol.State.Position:
-					MoveObject(str.id, float.Parse(str.param[1]), float.Parse(str.param[2]), float.Parse(str.param[3]));
-					break;
-			}
-		}
-	}
-
-	public void CreateObject(int id, string key, float pos_x, float pos_y, float pos_z, params string[] param) {
-		Vector3 pos = new Vector3(pos_x, pos_y, pos_z);
-		Transform newT = (Transform)Instantiate(objects[key], pos, Quaternion.identity);
-		FieldObject newF = newT.GetComponent<FieldObject>();
-		newF.NetworkInit(param);
-		newF.network.ID = id;
-		createObjectes.Add(newF.network);
-	}
-
-	public void MoveObject(int id, float pos_x, float pos_y, float pos_z) {
-		for (int i = 0; i < createObjectes.Count; i++) {
-			if (createObjectes[i].ID == id) {
-				//createObjectes[i].gameObject.GetComponent<TgNetworkCharacter>().SetDestPos(new Vector2(pos_x, pos_y));
-				createObjectes[i].gameObject.transform.position = new Vector3(pos_x, pos_y, pos_z);
-			}
 		}
 	}
 
