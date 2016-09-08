@@ -6,17 +6,29 @@
         exit;
     }
 
-    $id = $_GET['id'];
-    $password = $_GET['password'];
-    $email_address = $_GET['email_address'];
-    $nick_name = $_GET['nick_name'];
-    $is_admin = $_GET['is_admin'];
-    $regdate = $_GET['regdate'];
-    $last_login = $_GET['last_login'];
+    $id = $_POST['id'];
+    $email_address = $_POST['email_address'];
+    $password = $_POST['password'];
+    $nick_name = $_POST['nick_name'];
+    $is_admin = $_POST['is_admin'];
+    $regdate = $_POST['regdate'];
+    $last_login = "1";
+    if(!$id)
+        die("No id");
     if(!$email_address)
         die("No email address.");
-    $query = $penguin_connect->query("INSERT INTO  `velmont`.`penguin_member` (`member_srl` ,`email_address`,`password` ,`nick_name` ,`is_admin` ,`regdate` ,`last_login`) VALUES (NULL, '$email_address', '$password', '$nick_name', '$is_admin', '$regdate', '$last_login')");
+    if(!$password)
+        die ("No password");
+    if(!$nick_name)
+        die("No nickname");
+    if(!$is_admin)
+        die("No is_admin");
+    if(!$regdate)
+        die("No regdate");
+    $query = $penguin_connect->query("INSERT INTO `velmont`.`penguin_member` (`member_srl`, `id` ,`password` ,`nick_name` ,`email_address`,`is_admin` ,`regdate` ,`last_login`) VALUES (NULL, '$id','$password', '$nick_name',  '$email_address', '$is_admin', '$regdate', '$last_login')");
     if($query)
-        echo 'success';
+        echo "success";
+    else
+        echo "failed";
     $penguin_connect->close();
 ?>
