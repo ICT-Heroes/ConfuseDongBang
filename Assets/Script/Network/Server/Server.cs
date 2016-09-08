@@ -63,7 +63,7 @@ public class Server : MonoBehaviour {
 		string url = "http://minus-one.co.kr/penguin/insertMemberInfo.php";
 
 		WWWForm wform = new WWWForm();
-		wform.AddField("id", "ThisIsID2");
+		wform.AddField("id", "myIDDDD");
 		wform.AddField("password", "Pass");
 		wform.AddField("nick_name", "ThisIsNickName");
 		wform.AddField("email_address", "email@google.com");
