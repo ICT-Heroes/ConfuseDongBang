@@ -5,15 +5,15 @@ using PenguinModel;
 
 
 public enum NetFunc {
-	LOGIN, ACCOUNT
+	Login, Account, ChangePlayerData
 };
 
 public enum EchoType {
-	ECHO, NOT_ECHO
+	Echo, EchoType
 }
 
 public enum DataType{
-    GAME_INFO, MEMBER
+    GameInfo,Member,PlayerData
 }
 
 public class NetPacket {
@@ -22,6 +22,14 @@ public class NetPacket {
 	private NetFunc func;
 	private string jsString;
     private DataType dataType;
+
+	public NetPacket(DataType dataType, EchoType echoType, Func func, String jsString){
+		this.dataType = dataType;
+		this.echoType = echoType;
+		this.func = func;
+		this.jsString = jsString;
+	}
+
 
     public DataType DataType{
         get
@@ -72,5 +80,15 @@ public class NetPacket {
 		set {
 			jsString = value;
 		}
+	}
+
+	public override string ToString ()
+	{
+		return string.Format ("{0},{1},{2},{3},{4}", DataType, ClientID, EchoType, Func, JsString);
+	}
+
+	public static NetPacket Parse(string str){
+		str.Split (",");
+		NetPacket netPacket = new NetPacket (str [0], str [1], str [2], str [3], str [4]);
 	}
 }

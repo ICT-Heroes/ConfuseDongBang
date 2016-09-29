@@ -27,3 +27,5 @@ ExportedObj/
 sysinfo.txt
 *.apk
 First.zip
+Assets/Script/Model.meta
+Assets/Script/Network/NetworkFunctionLibrary.cs.meta
