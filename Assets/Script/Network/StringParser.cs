@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class StringParser {
-
-
 	static public string ToString(Vector3 vec) {
 		string ret = "v" + vec.x + "," + vec.y + "," + vec.z + ";";
 		return ret;

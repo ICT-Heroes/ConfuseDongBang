@@ -6,6 +6,7 @@ using System;
 using System.Net;
 using ClientNetwork;
 
+
 public class SampleClient : MonoBehaviour{
 
 	public InputField idComponent;
