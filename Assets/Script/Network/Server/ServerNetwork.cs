@@ -43,7 +43,7 @@ namespace ServerNetwork {
 		/// </summary>
 		/// <param name="str"></param>
 		public static void SendAll(NetFunc func, string jsString) {
-			StringWriter.messageBuffer = (new NetPacket(-100, EchoType.NOT_ECHO, func, jsString)).ToString();
+			StringWriter.messageBuffer = (new NetPacket(-100, EchoType.NotEcho, func, jsString)).ToString();
 		}
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace ServerNetwork {
         /// <param name="id"></param>
         /// <param name="str"></param>
         public static void Send(int id, NetFunc func, string jsString) {
-			StringWriter.SendForId(id, (new NetPacket(-100, EchoType.NOT_ECHO, func, jsString)).ToString());
+			StringWriter.SendForId(id, (new NetPacket(-100, EchoType.NotEcho, func, jsString)).ToString());
 		}
 
 		/// <summary>
@@ -233,11 +233,11 @@ namespace ServerNetwork {
                         string recieveString = reader.ReadLine();
                         if (recieveString != null) {
                             NetPacket str = NetPacket.Parse(recieveString);
-                            if (str.EchoType == EchoType.ECHO) {
+                            if (str.EchoType == EchoType.Echo) {
                                 ServerModule.SendAll(recieveString);
                             }
                             Received.EnqueueThreadSafe(str);
-                            if (str.Func == NetFunc.EXIT) {
+                            if (str.Func == NetFunc.Exit) {
                                 for (int i = 0; i < ClientSet.clients.Count; i++) {
                                     if (ClientSet.clients.ElementAt(i).GetId() == id) {
                                         ClientSet.clients.ElementAt(i).ExitSending();
@@ -420,7 +420,7 @@ namespace ServerNetwork {
             try {
                 //클라이언트에게 아이디를 보내줌
                 //클라이언트는 받은 아이디를 자신의 아이디로 세팅함.
-                string str = (new NetPacket(id, EchoType.NOT_ECHO, NetFunc.SETID, "")).ToString() + "\r\n";
+                string str = (new NetPacket(id, EchoType.NotEcho, NetFunc.SetId, "")).ToString() + "\r\n";
                 byte[] data = Encoding.UTF8.GetBytes(str);
                 writeStream.Write(data, 0, data.Length);
             } catch (Exception ex) {
@@ -449,7 +449,7 @@ namespace ServerNetwork {
         /// </summary>
         private void ConnectExit() {
             try {
-                byte[] data = Encoding.UTF8.GetBytes(new NetPacket(-100, EchoType.NOT_ECHO, NetFunc.EXIT, "") + "\r\n");
+                byte[] data = Encoding.UTF8.GetBytes(new NetPacket(-100, EchoType.NotEcho, NetFunc.Exit, "") + "\r\n");
                 writeStream.Write(data, 0, data.Length);
             } catch (Exception ex) {
                 Debug.Log(ex.ToString());

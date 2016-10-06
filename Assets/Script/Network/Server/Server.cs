@@ -7,8 +7,7 @@ using System.Collections.Generic;
 using ServerNetwork;
 
 public class Server : MonoBehaviour {
-
-
+	
 	public Text textDebug;
 	public Text textState;
 
@@ -36,9 +35,9 @@ public class Server : MonoBehaviour {
 		while (Received.GetCount() > 0) {
 			NetPacket str = Received.DequeueThreadSafe();
 			switch (str.Func) {
-                case NetFunc.ACCOUNT:
+                case NetFunc.Account:
                     break;
-                case NetFunc.LOGIN:
+                case NetFunc.Login:
                     break;
             }
 		}

@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using ClientNetwork;
+using System.Reflection;
+using System;
+using PenguinModel;
 
 /// <summary>
 /// 싱글톤이다.
@@ -25,18 +29,14 @@ public class NetworkManager : MonoBehaviour {
 	}
 
 	void Update() {
-		SeaStone();
-	}
-
-	/// <summary>
-	/// 해석
-	/// </summary>
-	private void SeaStone() {
 		while (ClientNetwork.Received.buffer.Count > 0) {
-			string str = ClientNetwork.Received.buffer.Dequeue();
-
+			string netPacketString = ClientNetwork.Received.buffer.Dequeue ();
+			NetworkFunctionLibrary.instance.Analyze (netPacketString);
 		}
 	}
+
+
+
 
 	void OnApplicationQuit() {
 		Debug.Log("Stop Network");

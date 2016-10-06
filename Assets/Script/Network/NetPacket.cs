@@ -1,15 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-
+using PenguinModel;
 
 
 public enum NetFunc {
-	LOGIN, ACCOUNT, EXIT, SETID
+	Login, Account, ChangePlayerData, Exit, SetId
 };
 
 public enum EchoType {
-	ECHO, NOT_ECHO
+	Echo, NotEcho
+}
+
+public enum DataType{
+    GameInfo,Member,PlayerData
 }
 
 public class NetPacket {
@@ -17,6 +21,26 @@ public class NetPacket {
 	private EchoType echoType;
 	private NetFunc func;
 	private string jsString;
+    private DataType dataType;
+
+	public NetPacket(DataType dataType, EchoType echoType, NetFunc func, String jsString){
+		this.dataType = dataType;
+		this.echoType = echoType;
+		this.func = func;
+		this.jsString = jsString;
+	}
+
+
+    public DataType DataType{
+        get
+        {
+            return dataType;
+        }
+        set
+        {
+            dataType = value;
+        }
+    }
 
     public NetPacket() {
     }
@@ -68,7 +92,14 @@ public class NetPacket {
 		}
 	}
 
-    public static NetPacket Parse(string ss) {
+	public override string ToString ()
+	{
+		return string.Format ("{0},{1},{2},{3},{4}", DataType, ClientID, EchoType, Func, JsString);
+	}
+
+	public static NetPacket Parse(string str){
+        //str.Split (",");
+        //NetPacket netPacket = new NetPacket (str [0], str [1], str [2], str [3], str [4]);
         return new NetPacket();
-    }
+	}
 }
