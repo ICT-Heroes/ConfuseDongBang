@@ -23,8 +23,9 @@ public class NetPacket {
 	private string jsString;
     private DataType dataType;
 
-	public NetPacket(DataType dataType, EchoType echoType, NetFunc func, String jsString){
+	public NetPacket(DataType dataType,int clientID, EchoType echoType, NetFunc func, String jsString){
 		this.dataType = dataType;
+		this.clientID = clientID;
 		this.echoType = echoType;
 		this.func = func;
 		this.jsString = jsString;
