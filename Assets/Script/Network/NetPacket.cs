@@ -23,8 +23,9 @@ public class NetPacket {
 	private string jsString;
     private DataType dataType;
 
-	public NetPacket(DataType dataType, EchoType echoType, Func func, String jsString){
+	public NetPacket(DataType dataType,int clientID, EchoType echoType, NetFunc func, String jsString){
 		this.dataType = dataType;
+		this.clientID = clientID;
 		this.echoType = echoType;
 		this.func = func;
 		this.jsString = jsString;
@@ -86,9 +87,5 @@ public class NetPacket {
 	{
 		return string.Format ("{0},{1},{2},{3},{4}", DataType, ClientID, EchoType, Func, JsString);
 	}
-
-	public static NetPacket Parse(string str){
-		str.Split (",");
-		NetPacket netPacket = new NetPacket (str [0], str [1], str [2], str [3], str [4]);
-	}
+		
 }
