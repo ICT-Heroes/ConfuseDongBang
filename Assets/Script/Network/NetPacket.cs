@@ -5,7 +5,7 @@ using System;
 
 
 public enum NetFunc {
-	LOGIN, ACCOUNT
+	LOGIN, ACCOUNT, EXIT, SETID
 };
 
 public enum EchoType {
@@ -18,7 +18,17 @@ public class NetPacket {
 	private NetFunc func;
 	private string jsString;
 
-	public int ClientID {
+    public NetPacket() {
+    }
+
+    public NetPacket(int clientID, EchoType type, NetFunc func, string jsString) {
+        this.clientID = clientID;
+        this.echoType = type;
+        this.func = func;
+        this.jsString = jsString;
+    }
+
+    public int ClientID {
 		get {
 			return clientID;
 		}
@@ -57,4 +67,8 @@ public class NetPacket {
 			jsString = value;
 		}
 	}
+
+    public static NetPacket Parse(string ss) {
+        return new NetPacket();
+    }
 }

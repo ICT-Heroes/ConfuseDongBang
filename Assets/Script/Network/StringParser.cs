@@ -79,6 +79,7 @@ public class StrProtocol {
 
 	public class Flow {
 		public const string Exit = "exit";
+        public const string OtherPlayerExit = "pexit";
 	}
 
 	public class Require {

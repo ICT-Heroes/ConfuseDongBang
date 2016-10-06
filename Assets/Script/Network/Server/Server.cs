@@ -17,7 +17,7 @@ public class Server : MonoBehaviour {
 	void Start() {
 		URLStart();
 		instance = this;
-		MyNet.Start();
+		ServerModule.Start();
 	}
 
 	void Update() {
@@ -28,28 +28,47 @@ public class Server : MonoBehaviour {
 
 	void OnApplicationQuit() {
 		Debug.Log("Stop Server");
-		MyNet.Stop();
+        ServerModule.Stop();
 	}
 
 
 	private void Decode() {
-		while (Received.strs.Count > 0) {
-			string str = Received.strs.Dequeue();
-			switch (str) {
-				case "":
-					break;
-			}
+		while (Received.GetCount() > 0) {
+			NetPacket str = Received.DequeueThreadSafe();
+			switch (str.Func) {
+                case NetFunc.ACCOUNT:
+                    break;
+                case NetFunc.LOGIN:
+                    break;
+            }
 		}
 	}
 
-	/*
+    /// <summary>
+    /// tcp 로 모든 클라이언트에게 보내고 싶을 때 사용.
+    /// </summary>
+    /// <param name="str"></param>
+    public static void SendAll(NetFunc func, string jsString) {
+        ServerModule.SendAll(func, jsString);
+    }
+
+    /// <summary>
+    /// tcp 로 특정 id 의 클라이언트에게 보내고 싶을 때 사용.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="str"></param>
+    public static void Send(int id, NetFunc func, string jsString) {
+        ServerModule.Send(id, func, jsString);
+    }
+
+    /*
 	public void SendPosition(ServerObject player) {
 		Vector3 pos = player.transform.position;
 		MyNet.SendAll(new ServerString(player.id, pos.x + "", pos.y + "", pos.z + ""));
 	}
 	*/
 
-	public string debugString {
+    public string debugString {
 		get { return instance.textDebug.text; }
 		set { if (value != null) instance.textDebug.text = value; }
 	}
