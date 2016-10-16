@@ -8,7 +8,7 @@ namespace PenguinModel
 		public Member(string id, Vector3 pos, string password, string nickname, string emailAddress, bool isAdmin, string regDate, string lastLogin)
 		{
 			this.Id = id;
-			this.position = pos;
+			this.Position = pos;
 			this.Password = password;
 			this.EmailAddress = emailAddress;
 			this.Nickname = nickname;

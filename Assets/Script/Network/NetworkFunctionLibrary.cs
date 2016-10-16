@@ -24,13 +24,11 @@ public class NetworkFunctionLibrary : MonoBehaviour {
 	/// <summary>
 	/// 해석
 	/// </summary>
-	public void Analyze(string st)
-	{
-			
-			NetPacket netPacket = JsonUtility.FromJson<NetPacket>(netPacketString);
-			Type dataType = DataParser.getDataType(netPacket.DataType);
-			StartCoroutine(netPacket.Func.ToString(), netPacket);
-
+	public void Analyze(string netPacketString)
+	{	
+		NetPacket netPacket = JsonUtility.FromJson<NetPacket>(netPacketString);
+		Type dataType = DataParser.getDataType(netPacket.DataType);
+		StartCoroutine(netPacket.Func.ToString(), netPacket);
 	}
 
 

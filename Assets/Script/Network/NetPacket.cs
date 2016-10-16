@@ -5,7 +5,7 @@ using PenguinModel;
 
 
 public enum NetFunc {
-	Login, Account, ChangePlayerData
+	Login, Account, ChangePlayerData, Success, Failed
 };
 
 public enum EchoType {
@@ -22,13 +22,6 @@ public class NetPacket {
 	private NetFunc func;
 	private string jsString;
     private DataType dataType;
-
-	public NetPacket(DataType dataType, EchoType echoType, Func func, String jsString){
-		this.dataType = dataType;
-		this.echoType = echoType;
-		this.func = func;
-		this.jsString = jsString;
-	}
 
 
     public DataType DataType{
@@ -88,7 +81,8 @@ public class NetPacket {
 	}
 
 	public static NetPacket Parse(string str){
-		str.Split (",");
-		NetPacket netPacket = new NetPacket (str [0], str [1], str [2], str [3], str [4]);
+		str.Split(',');
+		//NetPacket netPacket = new NetPacket (str [0], str [1], str [2], str [3], str [4]); 효빈이가 해결 예정
+		return new NetPacket();
 	}
 }
