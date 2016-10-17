@@ -27,8 +27,8 @@ public class NetworkFunctionLibrary : MonoBehaviour {
 	public void Analyze(string netPacketString)
 	{	
 		NetPacket netPacket = JsonUtility.FromJson<NetPacket>(netPacketString);
-		Type dataType = DataParser.getDataType(netPacket.DataType);
-		StartCoroutine(netPacket.Func.ToString(), netPacket);
+		Type dataType = DataParser.getDataType(netPacket.dataType);
+		StartCoroutine(netPacket.func.ToString(), netPacket);
 	}
 	
 	public IEnumerator Login(NetPacket np){
@@ -36,7 +36,7 @@ public class NetworkFunctionLibrary : MonoBehaviour {
 
 		string url = "http://minus-one.co.kr/penguin/insertMemberInfo.php";
 
-		Member member = JsonUtility.FromJson<Member> (np.JsString);
+		Member member = JsonUtility.FromJson<Member> (np.jsString);
 		WWWForm wform = new WWWForm ();
 		wform.AddField("id", member.id);
 		wform.AddField ("password", member.password);
@@ -50,7 +50,7 @@ public class NetworkFunctionLibrary : MonoBehaviour {
 
 		if (www.error == null) {
 			NetPacket netPacket = JsonUtility.FromJson<NetPacket> (www.text);
-			StartCoroutine (netPacket.Func.ToString(), netPacket);
+			StartCoroutine (netPacket.func.ToString(), netPacket);
 		} else {
 			Debug.Log("Error!");
 		}

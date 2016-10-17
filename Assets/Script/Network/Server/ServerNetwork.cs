@@ -10,31 +10,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 namespace ServerNetwork {
-    public class Print {
-		private static Queue<string> debug = new Queue<string>();
-		private static Queue<string> state = new Queue<string>();
-
-		public static string Debug {
-			get {
-				if (debug.Count > 0) return debug.Dequeue();
-				else return "";
-			}
-			set {
-				debug.Enqueue(value);
-			}
-
-		}
-
-		public static string State {
-			get {
-				if (state.Count > 0) return state.Dequeue();
-				else return "";
-			}
-			set {
-				state.Enqueue(value);
-			}
-		}
-	}
 
 	public class ServerModule {
 
@@ -42,8 +17,8 @@ namespace ServerNetwork {
 		/// tcp 로 모든 클라이언트에게 보내고 싶을 때 사용.
 		/// </summary>
 		/// <param name="str"></param>
-		public static void SendAll(NetFunc func, string jsString) {
-			StringWriter.messageBuffer = (new NetPacket(-100, EchoType.NotEcho, func, jsString)).ToString();
+		public static void SendAll(DataType type, NetFunc func, string jsString) {
+			StringWriter.messageBuffer = (new NetPacket(type, -100, EchoType.NotEcho, func, jsString)).ToString();
 		}
 
         /// <summary>
@@ -59,8 +34,8 @@ namespace ServerNetwork {
         /// </summary>
         /// <param name="id"></param>
         /// <param name="str"></param>
-        public static void Send(int id, NetFunc func, string jsString) {
-			StringWriter.SendForId(id, (new NetPacket(-100, EchoType.NotEcho, func, jsString)).ToString());
+        public static void Send(DataType type, int id, NetFunc func, string jsString) {
+			StringWriter.SendForId(id, (new NetPacket(type, -100, EchoType.NotEcho, func, jsString)).ToString());
 		}
 
 		/// <summary>
@@ -158,7 +133,7 @@ namespace ServerNetwork {
         */
 
 		public static void StartServer() {
-			Print.Debug = "Clients Count : " + ClientSet.clients.Count;
+			Debug.Log("Clients Count : " + ClientSet.clients.Count);
 			_MyNet server = new _MyNet();
 			for (int i = 0; i < bID.Count(); i++) bID[i] = false;
 			Thread thread = new Thread(server.Run);
@@ -232,20 +207,22 @@ namespace ServerNetwork {
                     try {
                         string recieveString = reader.ReadLine();
                         if (recieveString != null) {
-                            NetPacket str = NetPacket.Parse(recieveString);
-                            if (str.EchoType == EchoType.Echo) {
+                            NetPacket packet = NetPacket.Parse(recieveString);
+                            if (packet.echoType == EchoType.Echo) {
                                 ServerModule.SendAll(recieveString);
                             }
-                            Received.EnqueueThreadSafe(str);
-                            if (str.Func == NetFunc.Exit) {
+                            Received.EnqueueThreadSafe(packet);
+                            if (packet.func == NetFunc.Exit) {
+								/*
+								 * 밑에서 같은 동작을 하드라. DeleteClient 에서
                                 for (int i = 0; i < ClientSet.clients.Count; i++) {
                                     if (ClientSet.clients.ElementAt(i).GetId() == id) {
                                         ClientSet.clients.ElementAt(i).ExitSending();
                                     }
-                                }
-                                break;
+                                }*/
+								break;
                             }
-                            Print.Debug = (str.ToString());
+                            Debug.Log(packet.ToString());
                         }
                     } catch (Exception e) {
                         Debug.Log("CLIENT SOCKET: " + id + " / " + e.Message);
@@ -335,8 +312,7 @@ namespace ServerNetwork {
             clients.Add(sender);
             Thread senderThread = new Thread(sender.Run);
             senderThread.Start();
-            Print.State = "Clients Count : " + ClientSet.clients.Count;
-            Debug.Log("ADD CLIENT");
+            Debug.Log("Clients Count : " + clients.Count);
         }
 
         public static void DeleteClient(string hostAddress) {
@@ -345,7 +321,7 @@ namespace ServerNetwork {
                     clients[i].ExitSending();
                     clients.RemoveAt(i);
                     clientCount--;
-                    Print.State = "Clients Count : " + ClientSet.clients.Count;
+                    Debug.Log("Clients Count : " + clients.Count);
                     break;
                 }
             }
@@ -375,9 +351,10 @@ namespace ServerNetwork {
         }
 
         public void ExitSending() {
-            Debug.Log("종료시키겠다는 메세지를 받은 듯 : " + id);
+            Debug.Log("종료시키겠다는 메세지를 받음 : " + id);
             exit = true;
-        }
+			ConnectExit();
+		}
 
         public int GetId() {
             return id;
@@ -420,7 +397,8 @@ namespace ServerNetwork {
             try {
                 //클라이언트에게 아이디를 보내줌
                 //클라이언트는 받은 아이디를 자신의 아이디로 세팅함.
-                string str = (new NetPacket(id, EchoType.NotEcho, NetFunc.SetId, "")).ToString() + "\r\n";
+                string str = (new NetPacket(DataType.None, id, EchoType.NotEcho, NetFunc.SetId, "")).ToString() + "\r\n";
+				Debug.Log("send set id : " + str);
                 byte[] data = Encoding.UTF8.GetBytes(str);
                 writeStream.Write(data, 0, data.Length);
             } catch (Exception ex) {
@@ -433,12 +411,11 @@ namespace ServerNetwork {
         /// </summary>
         public void SendMessageForClient(string message) {
             try {
-                byte[] data = Encoding.UTF8.GetBytes(message + "\r\n");
+				byte[] data = Encoding.UTF8.GetBytes(message + "\r\n");
                 writeStream.Write(data, 0, data.Length);
                 if (exit) {
-                    ConnectExit();
+                    //ConnectExit();
                 }
-
             } catch (Exception ex) {
                 Debug.Log(ex.ToString());
             }
@@ -449,7 +426,8 @@ namespace ServerNetwork {
         /// </summary>
         private void ConnectExit() {
             try {
-                byte[] data = Encoding.UTF8.GetBytes(new NetPacket(-100, EchoType.NotEcho, NetFunc.Exit, "") + "\r\n");
+				string str = new NetPacket(DataType.None, -100, EchoType.NotEcho, NetFunc.Exit, "").ToString();
+				byte[] data = Encoding.UTF8.GetBytes(str + "\r\n");
                 writeStream.Write(data, 0, data.Length);
             } catch (Exception ex) {
                 Debug.Log(ex.ToString());

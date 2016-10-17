@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,6 @@ using System.Net;
 using System.IO;
 
 namespace ClientNetwork {
-
 	public class MyNet {
 		/// <summary>
 		/// 서버의 IP 주소이다. 수동으로 지정해서 알려주어야 한다.
@@ -39,9 +39,24 @@ namespace ClientNetwork {
 			Thread thread = new Thread(newNet.Run);
 			thread.Start();
 
+			/*
 			StringWriter writer = new StringWriter();
 			Thread sendThread = new Thread(writer.SendString);
 			sendThread.Start();
+			*/
+		}
+
+		/// <summary>
+		/// 서버에게 어떤 메세지를 보내고 싶을 때 사용한다.
+		/// </summary>
+		/// <param name="message"></param>
+		public static void Send(NetPacket packet) {
+			string message = packet.ToString();
+			bool exit = false;
+			if (packet.func == NetFunc.Exit)
+				exit = true;
+			_MyNet._SendString(message, exit);
+			//StringWriter.buffer.Enqueue(message);
 		}
 
 		/// <summary>
@@ -49,7 +64,8 @@ namespace ClientNetwork {
 		/// </summary>
 		/// <param name="message"></param>
 		public static void Send(string message) {
-			StringWriter.buffer.Enqueue(message);
+			_MyNet._SendString(message);
+			//StringWriter.buffer.Enqueue(message);
 		}
 
 
@@ -57,8 +73,8 @@ namespace ClientNetwork {
 		/// 서버와의 연결을 그만두고 싶을 때 사용한다.
 		/// </summary>
 		public static void Stop() {
-			string str = StrProtocol.Flow.Exit + "\r\n";
-			Send(str);
+			NetPacket packet = new NetPacket(DataType.None, myId, EchoType.NotEcho, NetFunc.Exit, "");
+			Send(packet);
 		}
 
 	}
@@ -67,7 +83,23 @@ namespace ClientNetwork {
 	/// 받은 NetString 을 저장하는 곳
 	/// </summary>
 	class Received {
-		public static Queue<string> buffer = new Queue<string>();
+		private static Queue<NetPacket> receiverBuffer = new Queue<NetPacket>();
+
+		public static int GetCount() {
+			return receiverBuffer.Count;
+		}
+		public static void EnqueueThreadSafe(NetPacket nStr) {
+			lock (receiverBuffer) {
+				receiverBuffer.Enqueue(nStr);
+			}
+		}
+		public static NetPacket DequeueThreadSafe() {
+			NetPacket nStr;
+			lock (receiverBuffer) {
+				nStr = receiverBuffer.Dequeue();
+			}
+			return nStr;
+		}
 	}
 
 	/// <summary>
@@ -80,15 +112,16 @@ namespace ClientNetwork {
 
 		public static bool isServerRun = true;
 
-		public static void _SendString(string message) {
+		public static void _SendString(string message, bool exit = false) {
 			try {
 				if (client.Connected) {
 					//str = Console.ReadLine() + "\r\n";
 					byte[] data = Encoding.UTF8.GetBytes(message + "\r\n");
 					writeStream.Write(data, 0, data.Length);
-					if (message.Equals(StrProtocol.Flow.Exit + "\r\n")) {
+					if (exit) {
 						isServerRun = false;
 						client.Close();
+						writeStream.Close();
 					}
 				}
 			} catch (Exception ex) {
@@ -133,8 +166,12 @@ namespace ClientNetwork {
 					//Console.WriteLine(str);
 					//if (str.Equals("exit")) break;
 					string reading = reader.ReadLine();
-					Console.WriteLine(reading);
-					Received.buffer.Enqueue(reading);
+					NetPacket packet = NetPacket.Parse(reading);
+					Received.EnqueueThreadSafe(packet);
+					if (packet.func == NetFunc.Exit) {
+						if(packet.clientId < 0)
+							break;	//쓰레드를 끝내라는 뜻
+					}
 				}
 			} catch (Exception e) {
 				Console.WriteLine(e.ToString());
@@ -148,6 +185,7 @@ namespace ClientNetwork {
 	}
 
 
+	/*
 	/// <summary>
 	/// 보낼 메세지를 쌓아두는 곳.
 	/// 넣자마자 서버에게 전송된다.
@@ -162,6 +200,21 @@ namespace ClientNetwork {
 				}
 			}
 		}
-	}
+	}*/
+	/// <summary>
+	/// 보낼 메세지를 쌓아두는 곳.
+	/// 넣자마자 모든 client, 혹은 특정 client 에게 전송된다.
+	/// </summary>
+	class StringWriter {
+		private static string usingMessage = "";
 
+		/// <summary>
+		/// 셋 하자마자 모든 클라이언트 큐에 메세지를 넣는다.
+		/// </summary>
+		public static void Send(string str) {
+			lock (usingMessage) {
+				_MyNet._SendString(str);
+			}
+		}
+	}
 }

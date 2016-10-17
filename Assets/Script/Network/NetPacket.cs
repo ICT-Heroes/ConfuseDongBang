@@ -13,93 +13,46 @@ public enum EchoType {
 }
 
 public enum DataType{
-    GameInfo,Member,PlayerData
+    GameInfo,Member,PlayerState, None
 }
 
 public class NetPacket {
-	private int clientID;
-	private EchoType echoType;
-	private NetFunc func;
-	private string jsString;
-    private DataType dataType;
+    public int clientId {get; set;}
+	public EchoType echoType { get; set; }
+    public NetFunc func { get; set; }
+    public string jsString { get; set; }
+    public DataType dataType { get; set; }
 
-	public NetPacket(DataType dataType,int clientID, EchoType echoType, NetFunc func, String jsString){
+    public NetPacket(DataType dataType,int clientID, EchoType echoType, NetFunc func, String jsString){
 		this.dataType = dataType;
-		this.clientID = clientID;
+		this.clientId = clientID;
 		this.echoType = echoType;
 		this.func = func;
 		this.jsString = jsString;
 	}
 
-    public DataType DataType{
-        get
-        {
-            return dataType;
-        }
-        set
-        {
-            dataType = value;
-        }
-    }
 
     public NetPacket() {
     }
 
+	/*
     public NetPacket(int clientID, EchoType type, NetFunc func, string jsString) {
         this.clientID = clientID;
         this.echoType = type;
         this.func = func;
         this.jsString = jsString;
     }
+	*/
 
-    public int ClientID {
-		get {
-			return clientID;
-		}
-
-		set {
-			clientID = value;
-		}
-	}
-
-	public EchoType EchoType {
-		get {
-			return echoType;
-		}
-
-		set {
-			echoType = value;
-		}
-	}
-
-	public NetFunc Func {
-		get {
-			return func;
-		}
-
-		set {
-			func = value;
-		}
-	}
-
-	public string JsString {
-		get {
-			return jsString;
-		}
-
-		set {
-			jsString = value;
-		}
-	}
 
 	public override string ToString ()
 	{
-		return string.Format ("{0},{1},{2},{3},{4}", DataType, ClientID, EchoType, Func, JsString);
+		return string.Format ("{0},{1},{2},{3},{4}", (int)dataType, clientId, (int)echoType, (int)func, jsString);
 	}
 
 	public static NetPacket Parse(string str){
-		str.Split(',');
-		NetPacket netPacket = new NetPacket (str [0], str [1], str [2], str [3], str [4]); //효빈이가 해결 예정
-		return new NetPacket();
+        string[] split = str.Split (',');
+        NetPacket netPacket = new NetPacket ((DataType)int.Parse(split[0]), int.Parse(split[1]), (EchoType)int.Parse(split[2]), (NetFunc)int.Parse(split[3]), split[4]);
+        return netPacket;
 	}
 }
