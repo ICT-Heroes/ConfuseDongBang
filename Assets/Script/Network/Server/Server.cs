@@ -8,9 +8,6 @@ using ServerNetwork;
 
 public class Server : MonoBehaviour {
 	
-	public Text textDebug;
-	public Text textState;
-
 	public static Server instance;
 
 	void Start() {
@@ -20,8 +17,6 @@ public class Server : MonoBehaviour {
 	}
 
 	void Update() {
-		debugString = Print.Debug;
-		stateString = Print.State;
 		Decode();
 	}
 
@@ -47,8 +42,8 @@ public class Server : MonoBehaviour {
     /// tcp 로 모든 클라이언트에게 보내고 싶을 때 사용.
     /// </summary>
     /// <param name="str"></param>
-    public static void SendAll(NetFunc func, string jsString) {
-        ServerModule.SendAll(func, jsString);
+    public static void SendAll(DataType type, NetFunc func, string jsString) {
+        ServerModule.SendAll(type, func, jsString);
     }
 
     /// <summary>
@@ -56,8 +51,8 @@ public class Server : MonoBehaviour {
     /// </summary>
     /// <param name="id"></param>
     /// <param name="str"></param>
-    public static void Send(int id, NetFunc func, string jsString) {
-        ServerModule.Send(id, func, jsString);
+    public static void Send(DataType type, int id, NetFunc func, string jsString) {
+        ServerModule.Send(type, id, func, jsString);
     }
 
     /*
@@ -66,16 +61,6 @@ public class Server : MonoBehaviour {
 		MyNet.SendAll(new ServerString(player.id, pos.x + "", pos.y + "", pos.z + ""));
 	}
 	*/
-
-    public string debugString {
-		get { return instance.textDebug.text; }
-		set { if (value != null) instance.textDebug.text = value; }
-	}
-
-	public string stateString {
-		get { return instance.textState.text; }
-		set { if (value != null) instance.textState.text = value; }
-	}
 
 	public void URLStart() {
 		string url = "http://minus-one.co.kr/penguin/insertMemberInfo.php";
