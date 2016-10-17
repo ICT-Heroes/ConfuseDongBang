@@ -4,8 +4,8 @@ namespace PenguinModel
 {
 	public class GameInfo
 	{
-		int totalKillScore;
-		int highScore;
+		public int totalKillScore;
+		public int highScore;
 	}
 }
 
