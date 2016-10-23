@@ -25,14 +25,36 @@ namespace ClientNetwork {
 		void Update() {
 			while (Received.GetCount() > 0) {
 				NetPacket packet = Received.DequeueThreadSafe();
-				Debug.Log(packet.ToString());
+				if(packet.ClientID != MyNet.myId)	Debug.Log(packet.ToString());
 				if (packet.Func == NetFunc.SetId) {
 					MyNet.myId = packet.ClientID;
 					Debug.Log("내 아이디 바뀜 : " + MyNet.myId);
 				}
 			}
+
+#if UNITY_ANDROID
+			if (Input.GetKeyDown(KeyCode.Escape)) {
+				Application.Quit();
+			}
+#endif
 		}
 
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+		/// <summary>
+		/// 홈버튼 눌렀을 때
+		/// </summary>
+		/// <param name="pause"></param>
+		void OnApplicationPause(bool pause) {
+			if (pause) {
+				OnApplicationQuit();
+			}
+		}
+#endif
+
+		/// <summary>
+		/// 백버튼 눌렀을 때
+		/// </summary>
 		void OnApplicationQuit() {
 			Debug.Log("Stop Network");
 			MyNet.Stop();

@@ -5,18 +5,19 @@ using System;
 [Serializable]
 public class PlayerState {
 	public int clientId;
-	public Vector3 pos;
-	public Quaternion rot;
+	public Vec3 pos;
+	public Quat rot;
 
 	public PlayerState() {
 		clientId = 0;
-		pos = new Vector3();
-		rot = new Quaternion();
+		pos = new Vec3();
+		rot = new Quat();
+		
 	}
 
 	public PlayerState(int clientId, Vector3 pos, Quaternion rot) {
 		this.clientId = clientId;
-		this.pos = pos;
-		this.rot = rot;
+		this.pos = new Vec3(pos);
+		this.rot = new Quat(rot);
 	}
 }

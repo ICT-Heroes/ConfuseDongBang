@@ -24,8 +24,8 @@ public class SampleTest : MonoBehaviour {
 			PlayerState data = new PlayerState(ClientNetwork.MyNet.myId, transform.position, transform.rotation);
 			string jsonString = JsonUtility.ToJson(data);
 			ClientNetwork.MyNet.Send(new NetPacket(DataType.PlayerState, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.ChangePlayerData, jsonString));
-			Debug.Log("myId : " + ClientNetwork.MyNet.myId + ", jsonString : " + jsonString);
-			yield return new WaitForSeconds(0.2f);
+			//Debug.Log("myId : " + ClientNetwork.MyNet.myId + ", jsonString : " + jsonString);
+			yield return new WaitForSeconds(1f);
 		}
 	}
 }

@@ -93,14 +93,13 @@ public class NetPacket {
 		}
 	}
 
-	public override string ToString ()
-	{
-		return string.Format ("{0},{1},{2},{3},{4}", (int)DataType, ClientID, (int)EchoType, (int)Func, JsString);
+	public override string ToString() {
+		return string.Format("{0};{1};{2};{3};{4}", (int)DataType, ClientID, (int)EchoType, (int)Func, JsString);
 	}
 
 	public static NetPacket Parse(string str){
-        string[] ss = str.Split (',');
-        NetPacket netPacket = new NetPacket ((DataType)int.Parse(ss[0]), int.Parse(ss[1]), (EchoType)int.Parse(ss[2]), (NetFunc)int.Parse(ss[3]), ss[4]);
+        string[] ss = str.Split (';');
+		NetPacket netPacket = new NetPacket ((DataType)int.Parse(ss[0]), int.Parse(ss[1]), (EchoType)int.Parse(ss[2]), (NetFunc)int.Parse(ss[3]), ss[4]);
         return netPacket;
 	}
 }
