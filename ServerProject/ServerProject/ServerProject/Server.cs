@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using System;
+using Newtonsoft.Json;
 
 namespace ServerNetwork {
 
 	public class Server {
 
 		public static Server instance;
+
+		public Dictionary<int, PlayerState> players = new Dictionary<int, PlayerState>();
 
 		public void Start() {
 			//URLStart();
@@ -15,13 +19,18 @@ namespace ServerNetwork {
 
 			//Thread.Sleep(100);
 			//RealNetwork.StopServer();
+			Update();
 		}
 
 		void Update() {
-			Decode();
+			while (true) {
+				Decode();
+				Thread.Sleep(10);
+			}
 		}
 
 		private void Decode() {
+			PlayerState state, temp;
 			while (Received.GetCount() > 0) {
 				NetPacket str = Received.DequeueThreadSafe();
 				switch (str.Func) {
@@ -29,6 +38,30 @@ namespace ServerNetwork {
 						break;
 					case NetFunc.Login:
 						break;
+
+					case NetFunc.RequireOtherPlayer:
+						state = JsonConvert.DeserializeObject<PlayerState>(str.JsString);
+						Console.WriteLine(state.clientId + " 번을 보내달라는 요청을 " + str.ClientID + " 번 에게 받음.");
+						if (players.TryGetValue(state.clientId, out temp)) {
+							string ss = JsonConvert.SerializeObject(temp);
+							Send(ClassType.PlayerState, str.ClientID, NetFunc.Create, ss);
+						} else {
+							Console.WriteLine("근데 실패함.");
+						}
+						break;
+					case NetFunc.ChangePlayerData:
+						state = JsonConvert.DeserializeObject<PlayerState>(str.JsString);
+						if (players.TryGetValue(str.ClientID, out temp)) {
+							temp.pos.Copy(state.pos);
+							temp.rot.Copy(state.rot);
+						}
+						break;
+					case NetFunc.Create:
+						state = JsonConvert.DeserializeObject<PlayerState>(str.JsString);
+						players.Add(str.ClientID, state);
+						Console.WriteLine("Create Charic : " + str.ClientID);
+						break;
+
 				}
 			}
 		}
@@ -37,7 +70,7 @@ namespace ServerNetwork {
 		/// tcp 로 모든 클라이언트에게 보내고 싶을 때 사용.
 		/// </summary>
 		/// <param name="str"></param>
-		public static void SendAll(DataType type, NetFunc func, string jsString) {
+		public static void SendAll(ClassType type, NetFunc func, string jsString) {
 			StringWriter.messageBuffer = (new NetPacket(type, -100, EchoType.NotEcho, func, jsString)).ToString();
 		}
 
@@ -54,7 +87,7 @@ namespace ServerNetwork {
 		/// </summary>
 		/// <param name="id"></param>
 		/// <param name="str"></param>
-		public static void Send(DataType type, int id, NetFunc func, string jsString) {
+		public static void Send(ClassType type, int id, NetFunc func, string jsString) {
 			StringWriter.SendForId(id, (new NetPacket(type, -100, EchoType.NotEcho, func, jsString)).ToString());
 		}
 
@@ -129,5 +162,25 @@ namespace ServerNetwork {
 
 	}
 
+}
+
+
+public class JsonUtility{
+	public static string ToJson(object o) {
+		return "";
+	}
+
+	public static void FromJson(ClassType type, string json) {
+		switch (type) {
+			case ClassType.GameInfo:
+				break;
+			case ClassType.Member:
+				break;
+			case ClassType.None:
+				break;
+			case ClassType.PlayerState:
+				break;
+		}
+	}
 }
 

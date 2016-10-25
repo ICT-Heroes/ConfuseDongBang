@@ -12,7 +12,7 @@ class DataParser
         return (Object)Convert.ChangeType(gameInfo, typeof(Object));
     }
 
-    public static Type getDataType(DataType dataType)
+    public static Type getDataType(ClassType dataType)
     {
         return Type.GetType(dataType.ToString());
     }

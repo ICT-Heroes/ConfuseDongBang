@@ -5,14 +5,14 @@ using PenguinModel;
 
 
 public enum NetFunc {
-	Login, Account, ChangePlayerData, Exit, SetId
+	Login, Account, ChangePlayerData, Exit, SetId, Create, RequireOtherPlayer
 };
 
 public enum EchoType {
 	Echo, NotEcho
 }
 
-public enum DataType{
+public enum ClassType{
     GameInfo,Member,PlayerState, None
 }
 
@@ -21,10 +21,10 @@ public class NetPacket {
 	private EchoType echoType;
 	private NetFunc func;
 	private string jsString;
-    private DataType dataType;
+    private ClassType classType;
 
-	public NetPacket(DataType dataType,int clientID, EchoType echoType, NetFunc func, String jsString){
-		this.dataType = dataType;
+	public NetPacket(ClassType classType,int clientID, EchoType echoType, NetFunc func, String jsString){
+		this.classType = classType;
 		this.clientID = clientID;
 		this.echoType = echoType;
 		this.func = func;
@@ -32,12 +32,12 @@ public class NetPacket {
 	}
 
 
-    public DataType DataType {
+    public ClassType DataType {
 		get {
-			return dataType;
+			return classType;
 		}
 		set {
-			dataType = value;
+			classType = value;
 		}
 	}
 
@@ -99,7 +99,7 @@ public class NetPacket {
 
 	public static NetPacket Parse(string str){
         string[] ss = str.Split (';');
-		NetPacket netPacket = new NetPacket ((DataType)int.Parse(ss[0]), int.Parse(ss[1]), (EchoType)int.Parse(ss[2]), (NetFunc)int.Parse(ss[3]), ss[4]);
+		NetPacket netPacket = new NetPacket ((ClassType)int.Parse(ss[0]), int.Parse(ss[1]), (EchoType)int.Parse(ss[2]), (NetFunc)int.Parse(ss[3]), ss[4]);
         return netPacket;
 	}
 }

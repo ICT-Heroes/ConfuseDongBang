@@ -174,7 +174,7 @@ namespace ServerNetwork {
                                 }*/
 								break;
 							}
-							Console.WriteLine(packet.ToString());
+							//Console.WriteLine(packet.ToString());
 						}
 					} catch (Exception e) {
 						Console.WriteLine("CLIENT SOCKET: " + id + " / " + e.Message);
@@ -349,7 +349,7 @@ namespace ServerNetwork {
 			try {
 				//클라이언트에게 아이디를 보내줌
 				//클라이언트는 받은 아이디를 자신의 아이디로 세팅함.
-				string str = (new NetPacket(DataType.None, id, EchoType.NotEcho, NetFunc.SetId, "")).ToString() + "\r\n";
+				string str = (new NetPacket(ClassType.None, id, EchoType.NotEcho, NetFunc.SetId, "")).ToString() + "\r\n";
 				Console.WriteLine("send set id : " + str);
 				byte[] data = Encoding.UTF8.GetBytes(str);
 				writeStream.Write(data, 0, data.Length);
@@ -378,7 +378,7 @@ namespace ServerNetwork {
 		/// </summary>
 		private void ConnectExit() {
 			try {
-				string str = new NetPacket(DataType.None, -100, EchoType.NotEcho, NetFunc.Exit, "").ToString();
+				string str = new NetPacket(ClassType.None, -100, EchoType.NotEcho, NetFunc.Exit, "").ToString();
 				byte[] data = Encoding.UTF8.GetBytes(str + "\r\n");
 				writeStream.Write(data, 0, data.Length);
 			} catch (Exception ex) {
