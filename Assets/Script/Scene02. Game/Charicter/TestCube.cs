@@ -5,10 +5,12 @@ public class TestCube : MonoBehaviour {
 
 	public int id = -1;
 	bool myCharic = false;
-	private Vector3 virtualVec, exVec;
+	private Vector3 virtualVec, exVec, movingForward, attackForward, currVec;
 	public ModelAnim model;
 
 	private GameObject lookAtObj;
+
+	public GameObject test;
 
 
 	public void SetID(int id) {
@@ -39,46 +41,100 @@ public class TestCube : MonoBehaviour {
 		if (myCharic) StartCoroutine(sendPosition());
 	}
 
+	private bool GetAttackForward(out Vector3 result) {
+		Ray ray = new Ray(MainCam.instance.cam.transform.position, MainCam.instance.cam.transform.forward);
+		RaycastHit hit;
+		if (Physics.Raycast(ray, out hit)) {
+			result = hit.point;
+			return true;
+		}
+		result = Vector3.zero;
+		return false;
+	}
+
 	// Update is called once per frame
 	void Update() {
 		if (!GameSystem.instance.UIMode) {
 			if (myCharic) {
+				movingForward = Vector3.zero;
 				if (Input.GetKey("w")) {
-					transform.position += MainCam.instance.transform.forward * Time.deltaTime;
+					movingForward += MainCam.instance.transform.forward * Time.deltaTime;
 				}
 
 				if (Input.GetKey("s")) {
-					transform.position -= MainCam.instance.transform.forward * Time.deltaTime;
+					movingForward -= MainCam.instance.transform.forward * Time.deltaTime;
 				}
 
 				if (Input.GetKey("d")) {
-					transform.position += MainCam.instance.transform.right * Time.deltaTime;
+					movingForward += MainCam.instance.transform.right * Time.deltaTime;
 				}
 
 				if (Input.GetKey("a")) {
-					transform.position -= MainCam.instance.transform.right * Time.deltaTime;
+					movingForward -= MainCam.instance.transform.right * Time.deltaTime;
 				}
+
+				if (Input.GetMouseButtonDown(0)) {
+					SendAnim(ModelAnim.Anim.attack0);
+					if (GetAttackForward(out attackForward)) {
+
+					}
+				}
+
+				if (Input.GetMouseButtonDown(1)) {
+					SendAnim(ModelAnim.Anim.attack1);
+					if (GetAttackForward(out attackForward)) {
+
+					}
+				}
+
 #if (UNITY_ANDROID || UNITY_IOS)
-				transform.position += MainCam.instance.transform.forward * AndriodJoystic.instance.vec.y * Time.deltaTime;
-				transform.position += MainCam.instance.transform.right * AndriodJoystic.instance.vec.x * Time.deltaTime;
+				movingForward += MainCam.instance.transform.forward * AndriodJoystic.instance.vec.y * Time.deltaTime;
+				movingForward += MainCam.instance.transform.right * AndriodJoystic.instance.vec.x * Time.deltaTime;
 				//transform.position += AndriodJoystic.instance.vec * Time.deltaTime;
 #endif
-				Vector3 currVec = transform.position - exVec;
-				exVec = transform.position;
-				float dist = Vector3.SqrMagnitude(currVec) * 50000;
-				if (dist < 1) {
-					model.SetAnim(ModelAnim.Anim.stand);
-				} else if (dist < 5) {
-					model.SetAnim(ModelAnim.Anim.run);
+				float dist = 0;
+				if (!model.Attacking) {
+					transform.position += movingForward;
+					currVec = transform.position - exVec;
+					exVec = transform.position;
+					dist = Vector3.SqrMagnitude(currVec) * 50000;
+					if (dist < 1) {
+						SendAnim(ModelAnim.Anim.stand);
+					} else if (dist < 5) {
+						SendAnim(ModelAnim.Anim.run);
+					} else {
+						SendAnim(ModelAnim.Anim.dash);
+					}
+					currVec = Vector3.Normalize(currVec);
+					lookAtObj.transform.localPosition = Vector3.Lerp(lookAtObj.transform.localPosition, currVec, Time.deltaTime * 10);
 				} else {
-					model.SetAnim(ModelAnim.Anim.dash);
+					currVec = Vector3.Normalize(attackForward - transform.position);
+					lookAtObj.transform.localPosition = new Vector3(currVec.x, 0, currVec.z);
+					dist = 1;
 				}
-				currVec = Vector3.Normalize(currVec);
-				lookAtObj.transform.localPosition = Vector3.Lerp(lookAtObj.transform.localPosition, currVec, Time.deltaTime * 10);
 				model.transform.localPosition = Vector3.zero;
-				model.transform.LookAt(lookAtObj.transform.position);
+				if(dist > 0.5f)	model.transform.LookAt(lookAtObj.transform.position);
+
+
+
 			}
 		}
+	}
+
+	/// <summary>
+	/// 어택을 실행함.
+	/// </summary>
+	/// <param name="num"></param>
+	public void AttackEvent(int num) {
+
+	}
+
+	/// <summary>
+	/// 어택이 끝남
+	/// </summary>
+	/// <param name="num"></param>
+	public void AttackEnd(int num) {
+
 	}
 
 	/// <summary>
@@ -96,6 +152,23 @@ public class TestCube : MonoBehaviour {
 			transform.position += virtualVec * Time.deltaTime * 10;
 			yield return null;
 		}	
+	}
+
+	/// <summary>
+	/// 캐릭터가 내것이 아닐 때, 네트워크를 통해 받은대로 애니메이션을 바꾼다.
+	/// </summary>
+	public void SetAnim(ModelAnim.Anim anim) {
+		model.SetAnim(anim);
+	}
+
+	/// <summary>
+	/// 캐릭터가 내것일때 애니메이션을 보낸다.
+	/// </summary>
+	private void SendAnim(ModelAnim.Anim anim) {
+		model.SetAnim(anim);
+		PlayerAnim data = new PlayerAnim(ClientNetwork.MyNet.myId, anim);
+		string jsonString = JsonUtility.ToJson(data);
+		ClientNetwork.MyNet.Send(new NetPacket(ClassType.PlayerAnim, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.ChangePlayerData, jsonString));
 	}
 
 	public IEnumerator sendPosition() {

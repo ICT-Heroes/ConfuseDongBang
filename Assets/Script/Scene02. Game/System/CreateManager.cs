@@ -57,4 +57,19 @@ public class CreateManager : MonoBehaviour {
 			}
 		}
 	}
+
+	/// <summary>
+	/// 네트워크로 받은 나 이외의 다른 아이디의 캐릭터의 애니메이션을 바꾼다.
+	/// </summary>
+	public void SetAnim(string jsString) {
+		PlayerAnim state = JsonUtility.FromJson<PlayerAnim>(jsString);
+		if (state.clientId != ClientNetwork.MyNet.myId) {
+			TestCube cube;
+			if (charicters.TryGetValue(state.clientId, out cube)) {
+				cube.SetAnim(ModelAnim.ConvertIntToAnim(state.anim));
+			}
+		}
+	}
+
+
 }

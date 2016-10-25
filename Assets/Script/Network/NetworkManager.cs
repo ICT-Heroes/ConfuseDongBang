@@ -30,7 +30,10 @@ namespace ClientNetwork {
 					case NetFunc.Account:
 						break;
 					case NetFunc.ChangePlayerData:      //캐릭터 움직임
-						CreateManager.instance.SetPos(packet.JsString);
+						if(packet.DataType == ClassType.PlayerState)
+							CreateManager.instance.SetPos(packet.JsString);
+						else
+							CreateManager.instance.SetAnim(packet.JsString);
 						break;
 					case NetFunc.Create:				//캐릭터 생성
 						CreateManager.instance.CreateCharicter(packet.JsString);

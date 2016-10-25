@@ -13,7 +13,7 @@ public enum EchoType {
 }
 
 public enum ClassType{
-    GameInfo,Member,PlayerState, None
+    GameInfo,Member,PlayerState, None, PlayerAnim
 }
 
 public class NetPacket {
