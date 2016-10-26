@@ -1,13 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 using System.Collections.Generic;
 
 public class CreateManager : MonoBehaviour {
+
+	public enum Charic {
+		penguin
+	}
 
 	public static CreateManager instance;
 
 	public TestCube myCharicter;
 	public Transform testCube;
+	public AttackTransform penguinAttack;
 
 
 
@@ -30,6 +36,26 @@ public class CreateManager : MonoBehaviour {
 			charicters.Add(state.clientId, tc);
 			Debug.Log("다른놈 캐릭터 생성 : " + state.clientId);
 		}
+	}
+
+	public void CreateAttack(string jsString) {
+		PlayerAttack atk = JsonUtility.FromJson<PlayerAttack>(jsString);
+		Transform newT = (Transform)Instantiate(GettAttackTransform(atk.GetCharic(), atk.atkNum), atk.pos.ToVector3(), Quaternion.identity);
+		AttackBase attackBase = newT.GetComponent<AttackBase>();
+		attackBase.damage = atk.damage;
+		attackBase.clientID = atk.clientID;
+		newT.LookAt(atk.target.ToVector3());
+	}
+
+	private Transform GettAttackTransform(CreateManager.Charic charic, int num) {
+		switch (charic) {
+			case Charic.penguin:
+				if (num == 0) return penguinAttack.atk0;
+				if (num == 1) return penguinAttack.atk1;
+				if (num == 2) return penguinAttack.atk2;
+				break;
+		}
+		return penguinAttack.atk1;
 	}
 
 	/// <summary>
@@ -72,4 +98,9 @@ public class CreateManager : MonoBehaviour {
 	}
 
 
+}
+
+[Serializable]
+public class AttackTransform{
+	public Transform atk0, atk1, atk2;
 }

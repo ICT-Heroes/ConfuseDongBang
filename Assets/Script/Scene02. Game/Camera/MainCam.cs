@@ -4,7 +4,7 @@ using System.Collections;
 public class MainCam : MonoBehaviour {
 
 	public Camera cam;
-	public GameObject mainCamY;
+	public GameObject mainCamY, mainCamCenter;
 	public static MainCam instance;
 	public static float mouseDelta = 5;
 

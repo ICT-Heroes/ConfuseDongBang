@@ -5,7 +5,7 @@ using PenguinModel;
 
 
 public enum NetFunc {
-	Login, Account, ChangePlayerData, Exit, SetId, Create, RequireOtherPlayer
+	Login, Account, ChangePlayerData, Exit, SetId, Create, RequireOtherPlayer, Chat, Attack
 };
 
 public enum EchoType {
@@ -13,7 +13,7 @@ public enum EchoType {
 }
 
 public enum ClassType{
-    GameInfo,Member,PlayerState, None, PlayerAnim
+    GameInfo,Member,PlayerState, None, PlayerAnim, PlayerChat, PlayerAttack
 }
 
 public class NetPacket {

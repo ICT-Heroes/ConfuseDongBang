@@ -15,7 +15,7 @@ public class GameSystem : MonoBehaviour {
 
 	public static GameSystem instance;
 
-	public GameObject uis;
+	public GameObject uis, androidUi;
 
 	private bool uiMode = false;
 	public bool UIMode {
@@ -28,11 +28,14 @@ public class GameSystem : MonoBehaviour {
 
 	void Start () {
 		SetUIMode(false);
+		if (!(Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)) {
+			Destroy(androidUi);
+		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Return)) {
+		if (Input.GetKeyDown(KeyCode.Escape)) {
 			if (uiMode) {
 				SetUIMode(false);
 			} else {

@@ -61,7 +61,9 @@ namespace ServerNetwork {
 						players.Add(str.ClientID, state);
 						Console.WriteLine("Create Charic : " + str.ClientID);
 						break;
-
+					case NetFunc.Chat:
+						SendAll(ClassType.PlayerChat, NetFunc.Chat, str.JsString);
+						break;
 				}
 			}
 		}

@@ -8,10 +8,14 @@ public class TestCube : MonoBehaviour {
 	private Vector3 virtualVec, exVec, movingForward, attackForward, currVec;
 	public ModelAnim model;
 
+	public CreateManager.Charic charic = CreateManager.Charic.penguin;
+
+	private Rigidbody rigidbody;
 	private GameObject lookAtObj;
 
-	public GameObject test;
+	private int flying = 0;
 
+	public int Hp = 1000;
 
 	public void SetID(int id) {
 		this.id = id;
@@ -27,8 +31,8 @@ public class TestCube : MonoBehaviour {
 		if (id == ClientNetwork.MyNet.myId) {
 			myCharic = true;
 			MainCam.instance.SetMyCharicter(gameObject);
-			Rigidbody rig = gameObject.AddComponent<Rigidbody>();
-			rig.freezeRotation = true;
+			rigidbody = gameObject.AddComponent<Rigidbody>();
+			rigidbody.freezeRotation = true;
 
 			PlayerState data = new PlayerState(ClientNetwork.MyNet.myId, transform.position, transform.rotation);
 			string jsonString = JsonUtility.ToJson(data);
@@ -37,12 +41,13 @@ public class TestCube : MonoBehaviour {
 			lookAtObj = new GameObject();
 			lookAtObj.transform.SetParent(transform);
 			lookAtObj.transform.localPosition = transform.forward;
+			SkillUI.instance.InitUI(charic);
 		}
 		if (myCharic) StartCoroutine(sendPosition());
 	}
 
 	private bool GetAttackForward(out Vector3 result) {
-		Ray ray = new Ray(MainCam.instance.cam.transform.position, MainCam.instance.cam.transform.forward);
+		Ray ray = new Ray(MainCam.instance.mainCamCenter.transform.position, MainCam.instance.cam.transform.forward);
 		RaycastHit hit;
 		if (Physics.Raycast(ray, out hit)) {
 			result = hit.point;
@@ -58,32 +63,33 @@ public class TestCube : MonoBehaviour {
 			if (myCharic) {
 				movingForward = Vector3.zero;
 				if (Input.GetKey("w")) {
-					movingForward += MainCam.instance.transform.forward * Time.deltaTime;
+					movingForward += MainCam.instance.transform.forward * Time.deltaTime * 1.2f;
 				}
 
 				if (Input.GetKey("s")) {
-					movingForward -= MainCam.instance.transform.forward * Time.deltaTime;
+					movingForward -= MainCam.instance.transform.forward * Time.deltaTime * 1.2f;
 				}
 
 				if (Input.GetKey("d")) {
-					movingForward += MainCam.instance.transform.right * Time.deltaTime;
+					movingForward += MainCam.instance.transform.right * Time.deltaTime * 1.2f;
 				}
 
 				if (Input.GetKey("a")) {
-					movingForward -= MainCam.instance.transform.right * Time.deltaTime;
+					movingForward -= MainCam.instance.transform.right * Time.deltaTime * 1.2f;
 				}
 
-				if (Input.GetMouseButtonDown(0)) {
-					SendAnim(ModelAnim.Anim.attack0);
-					if (GetAttackForward(out attackForward)) {
+				if (flying > 0 && Input.GetKeyDown(KeyCode.Space)) {
+					//SendAnim(ModelAnim.Anim.air);
+					rigidbody.AddForce(new Vector3(0, 200, 0));
+				}
 
+				if (Application.platform != RuntimePlatform.Android && Application.platform != RuntimePlatform.IPhonePlayer) {
+					if (Input.GetMouseButtonDown(0)) {
+						SendAttack(0);
 					}
-				}
 
-				if (Input.GetMouseButtonDown(1)) {
-					SendAnim(ModelAnim.Anim.attack1);
-					if (GetAttackForward(out attackForward)) {
-
+					if (Input.GetMouseButtonDown(1)) {
+						SendAttack(1);
 					}
 				}
 
@@ -94,29 +100,72 @@ public class TestCube : MonoBehaviour {
 #endif
 				float dist = 0;
 				if (!model.Attacking) {
-					transform.position += movingForward;
-					currVec = transform.position - exVec;
-					exVec = transform.position;
-					dist = Vector3.SqrMagnitude(currVec) * 50000;
-					if (dist < 1) {
-						SendAnim(ModelAnim.Anim.stand);
-					} else if (dist < 5) {
-						SendAnim(ModelAnim.Anim.run);
-					} else {
-						SendAnim(ModelAnim.Anim.dash);
-					}
-					currVec = Vector3.Normalize(currVec);
+					transform.position += movingForward;				//때리는 중이 아니라면 위치가 움직여야 한다.
+					currVec = transform.position - exVec;				//현재 움직이는 방향
+					currVec = new Vector3(currVec.x, 0, currVec.z);		//펭귄이라면 y축으로 움직이는 것은 그만둔다.
+					dist = Vector3.SqrMagnitude(currVec) * 50000;		//얼마만큼의 속도로 움직이고 있는지 dist 를 구한다. 달릴지 걷는지 쉬는중인지 알기위해
+					currVec = Vector3.Normalize(currVec);				//단순방향만을 알고싶어서 노멀라이즈 시킨다.
+					exVec = transform.position;							//다음 프레임에서도 움직이는 위치를 알고 싶어서 현재 위치를 저장한다.
+
+					SendMyAnim(dist);
 					lookAtObj.transform.localPosition = Vector3.Lerp(lookAtObj.transform.localPosition, currVec, Time.deltaTime * 10);
 				} else {
 					currVec = Vector3.Normalize(attackForward - transform.position);
 					lookAtObj.transform.localPosition = new Vector3(currVec.x, 0, currVec.z);
 					dist = 1;
 				}
-				model.transform.localPosition = Vector3.zero;
+				
 				if(dist > 0.5f)	model.transform.LookAt(lookAtObj.transform.position);
+			}
+		}
+		model.transform.localPosition = Vector3.zero;
+	}
 
+	private void SendAttack(int num) {
+		if (SkillUI.instance.SkillUseAble(num)) {
+			SkillUI.instance.OnButtonSkillTouch(num);
+			PlayerAttack atk;
+			string json;
+			if (GetAttackForward(out attackForward)) {
+				switch (num) {
+					case 0:
+						SendAnim(ModelAnim.Anim.attack0);
+						atk = new PlayerAttack(ClientNetwork.MyNet.myId, charic, 0, 100, new Vec3(transform.position), new Vec3(attackForward));
+						json = JsonUtility.ToJson(atk);
+						ClientNetwork.MyNet.Send(new NetPacket(ClassType.PlayerAttack, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.Attack, json));
+						break;
+					case 1:
+						SendAnim(ModelAnim.Anim.attack1);
+						atk = new PlayerAttack(ClientNetwork.MyNet.myId, charic, 1, 100, new Vec3(transform.position), new Vec3(attackForward));
+						json = JsonUtility.ToJson(atk);
+						ClientNetwork.MyNet.Send(new NetPacket(ClassType.PlayerAttack, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.Attack, json));
+						break;
+					case 2:
+						SendAnim(ModelAnim.Anim.attack2);
+						atk = new PlayerAttack(ClientNetwork.MyNet.myId, charic, 2, 100, new Vec3(transform.position), new Vec3(attackForward));
+						json = JsonUtility.ToJson(atk);
+						ClientNetwork.MyNet.Send(new NetPacket(ClassType.PlayerAttack, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.Attack, json));
+						break;
+				}
 
+			}
+		}
+	}
 
+	/// <summary>
+	/// 애니메이션을 실행시키고 서버에 보낸다.
+	/// </summary>
+	/// <param name="distance"></param>
+	private void SendMyAnim(float distance) {
+		if (flying == 0) {
+			SendAnim(ModelAnim.Anim.air);
+		} else {
+			if (distance < 1) {
+				SendAnim(ModelAnim.Anim.stand);
+			} else if (distance < 3) {
+				SendAnim(ModelAnim.Anim.run);
+			} else {
+				SendAnim(ModelAnim.Anim.dash);
 			}
 		}
 	}
@@ -159,6 +208,14 @@ public class TestCube : MonoBehaviour {
 	/// </summary>
 	public void SetAnim(ModelAnim.Anim anim) {
 		model.SetAnim(anim);
+	}
+
+	void OnTriggerEnter(Collider coll) {
+		flying++;
+	}
+
+	void OnTriggerExit(Collider coll) {
+		flying--;
 	}
 
 	/// <summary>

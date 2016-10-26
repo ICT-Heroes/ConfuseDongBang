@@ -48,6 +48,12 @@ namespace ClientNetwork {
 						CreateManager.instance.myCharicter.id = MyNet.myId;
 						CreateManager.instance.myCharicter.StartEndOfLoading();
 						break;
+					case NetFunc.Chat:
+						Chattings.Chatting.instance.OnNetwork(packet.JsString);
+						break;
+					case NetFunc.Attack:
+						CreateManager.instance.CreateAttack(packet.JsString);
+						break;
 				}
 			}
 		}
