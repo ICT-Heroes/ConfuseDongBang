@@ -42,6 +42,15 @@ public class GameSystem : MonoBehaviour {
 				SetUIMode(true);
 			}
 		}
+
+		if (Input.GetKeyDown(KeyCode.Return)) {
+			if (!uiMode) {
+				SetUIMode(true);
+				Chattings.Chatting.instance.FocusToInputField();
+			}
+		}
+
+
 	}
 
 	public void SetUIMode(bool on) {

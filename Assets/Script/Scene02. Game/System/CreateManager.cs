@@ -76,7 +76,7 @@ public class CreateManager : MonoBehaviour {
 		if (state.clientId != ClientNetwork.MyNet.myId) {
 			TestCube cube;
 			if (charicters.TryGetValue(state.clientId, out cube)) {
-				cube.SetPos(state.pos.ToVector3(), state.rot.ToQuaternion());
+				cube.SetPos(state.pos.ToVector3(), state.rot.ToQuaternion(), state.hp, state.maxHp);
 			} else {
 				NetPacket packet = new NetPacket(ClassType.PlayerState, ClientNetwork.MyNet.myId, EchoType.NotEcho, NetFunc.RequireOtherPlayer, jsString);
 				ClientNetwork.MyNet.Send(packet);
@@ -94,6 +94,18 @@ public class CreateManager : MonoBehaviour {
 			if (charicters.TryGetValue(state.clientId, out cube)) {
 				cube.SetAnim(ModelAnim.ConvertIntToAnim(state.anim));
 			}
+		}
+	}
+
+	/// <summary>
+	/// UI 를 통해 안드로이드에서 공격버튼을 눌렀을 때 발동.
+	/// </summary>
+	/// <param name="num"></param>
+	public void OnButtonAttack(int num) {
+		if (num == 2) {
+			myCharicter.Jump();
+		} else {
+			myCharicter.SendAttack(num);
 		}
 	}
 

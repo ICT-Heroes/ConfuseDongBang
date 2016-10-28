@@ -9,7 +9,7 @@ using PenguinModel;
 namespace ClientNetwork {
 
 	public class NetworkManager : MonoBehaviour {
-		public string serverAddress = "192.168.0.2";
+		public string serverAddress = "127.0.0.1";
 		public int ID = -1;
 
 		public static NetworkManager instance;

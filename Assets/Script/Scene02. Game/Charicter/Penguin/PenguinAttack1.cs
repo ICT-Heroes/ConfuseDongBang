@@ -34,17 +34,3 @@ public class PenguinAttack1 : AttackBase {
 	}
 }
 
-public class AttackBase : MonoBehaviour{
-	public int damage;
-	public int clientID;
-	public void OnAttackEnter(Collider coll) {
-		if (clientID != ClientNetwork.MyNet.myId) {
-			if (coll.tag.Equals("Player")) {
-				TestCube tc = coll.GetComponent<TestCube>();
-				if (tc.id == ClientNetwork.MyNet.myId) {
-					tc.Hp -= damage;
-				}
-			}
-		}
-	}
-}

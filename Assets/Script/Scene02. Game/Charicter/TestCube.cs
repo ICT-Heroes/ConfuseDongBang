@@ -12,10 +12,69 @@ public class TestCube : MonoBehaviour {
 
 	private Rigidbody rigidbody;
 	private GameObject lookAtObj;
+	public CapsuleCollider capsuleCol;
+
+	public Gauge.BaseGauge hpGauge;
 
 	private int flying = 0;
+	private bool dead = false;
 
-	public int Hp = 1000;
+	private int maxHp = 1000;
+	private int hp = 1000;
+	public int Hp {
+		get {
+			return hp;
+		}
+		set {
+			if (!dead) {
+				hp = value;
+				if (hp <= 0) {
+					hp = 0;
+					if (ClientNetwork.MyNet.myId == id) {
+						dead = true;
+						StartCoroutine(deadUpdate());
+					}
+				}
+				hpGauge.Set(hp, maxHp);
+			}
+		}
+	}
+
+	/// <summary>
+	/// 초기화.
+	/// </summary>
+	private void Init() {
+		transform.position = new Vector3(0.7f, 1, 0);
+		Hp = 1000;
+		virtualVec = Vector3.zero;
+	}
+
+	private IEnumerator deadUpdate() {
+		SendAnim(ModelAnim.Anim.dead);
+		GameObject obj = new GameObject();
+		Rigidbody modelRig = obj.AddComponent<Rigidbody>();
+		capsuleCol.height = 0;
+		capsuleCol.center = Vector3.zero;
+		obj.transform.SetParent(transform, true);
+		obj.transform.localPosition = new Vector3(0, 0.73f, 0);
+		rigidbody.freezeRotation = false;
+		model.transform.SetParent(obj.transform, true);
+		modelRig.AddTorque(new Vector3(Random.Range(-100, 100), Random.Range(-100, 100), Random.Range(-100, 100)), ForceMode.VelocityChange);
+		float timer = 0;
+		while (timer < 5) {
+			timer += Time.deltaTime;
+			obj.transform.localPosition = Vector3.zero;
+			yield return null;
+		}
+		dead = false;
+		model.transform.SetParent(transform, true);
+		rigidbody.freezeRotation = true;
+		transform.rotation = Quaternion.identity;
+		capsuleCol.height = 1.84f;
+		capsuleCol.center = new Vector3(0, 0.9f, 0);
+		Destroy(obj);
+		Init();
+	}
 
 	public void SetID(int id) {
 		this.id = id;
@@ -23,7 +82,7 @@ public class TestCube : MonoBehaviour {
 
 	// Use this for initialization
 	void Start() {
-		virtualVec = Vector3.zero;
+		Init();
 		StartCoroutine(movePosition());
 	}
 
@@ -34,7 +93,7 @@ public class TestCube : MonoBehaviour {
 			rigidbody = gameObject.AddComponent<Rigidbody>();
 			rigidbody.freezeRotation = true;
 
-			PlayerState data = new PlayerState(ClientNetwork.MyNet.myId, transform.position, transform.rotation);
+			PlayerState data = new PlayerState(ClientNetwork.MyNet.myId, transform.position, transform.rotation, hp, maxHp);
 			string jsonString = JsonUtility.ToJson(data);
 			NetPacket packet = new NetPacket(ClassType.PlayerState, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.Create, jsonString);
 			ClientNetwork.MyNet.Send(packet);
@@ -42,6 +101,8 @@ public class TestCube : MonoBehaviour {
 			lookAtObj.transform.SetParent(transform);
 			lookAtObj.transform.localPosition = transform.forward;
 			SkillUI.instance.InitUI(charic);
+			Destroy(hpGauge.gameObject);
+			hpGauge = Gauge.MyHpGauge.instance;
 		}
 		if (myCharic) StartCoroutine(sendPosition());
 	}
@@ -60,27 +121,30 @@ public class TestCube : MonoBehaviour {
 	// Update is called once per frame
 	void Update() {
 		if (!GameSystem.instance.UIMode) {
-			if (myCharic) {
+			if (myCharic && !dead) {
 				movingForward = Vector3.zero;
+				if (Input.GetKeyDown("l")) {
+					Hp = 0;
+				}
+
 				if (Input.GetKey("w")) {
-					movingForward += MainCam.instance.transform.forward * Time.deltaTime * 1.2f;
+					movingForward += MainCam.instance.transform.forward * Time.deltaTime;
 				}
 
 				if (Input.GetKey("s")) {
-					movingForward -= MainCam.instance.transform.forward * Time.deltaTime * 1.2f;
+					movingForward -= MainCam.instance.transform.forward * Time.deltaTime;
 				}
 
 				if (Input.GetKey("d")) {
-					movingForward += MainCam.instance.transform.right * Time.deltaTime * 1.2f;
+					movingForward += MainCam.instance.transform.right * Time.deltaTime;
 				}
 
 				if (Input.GetKey("a")) {
-					movingForward -= MainCam.instance.transform.right * Time.deltaTime * 1.2f;
+					movingForward -= MainCam.instance.transform.right * Time.deltaTime;
 				}
 
 				if (flying > 0 && Input.GetKeyDown(KeyCode.Space)) {
-					//SendAnim(ModelAnim.Anim.air);
-					rigidbody.AddForce(new Vector3(0, 200, 0));
+					Jump();
 				}
 
 				if (Application.platform != RuntimePlatform.Android && Application.platform != RuntimePlatform.IPhonePlayer) {
@@ -118,10 +182,18 @@ public class TestCube : MonoBehaviour {
 				if(dist > 0.5f)	model.transform.LookAt(lookAtObj.transform.position);
 			}
 		}
-		model.transform.localPosition = Vector3.zero;
+		if (!dead) {
+			model.transform.localPosition = Vector3.zero;
+		} else {
+			model.transform.localPosition = new Vector3(0, -0.1f, 0);
+		}
 	}
 
-	private void SendAttack(int num) {
+	public void Jump() {
+		rigidbody.AddForce(new Vector3(0, 200, 0));
+	}
+
+	public void SendAttack(int num) {
 		if (SkillUI.instance.SkillUseAble(num)) {
 			SkillUI.instance.OnButtonSkillTouch(num);
 			PlayerAttack atk;
@@ -162,7 +234,7 @@ public class TestCube : MonoBehaviour {
 		} else {
 			if (distance < 1) {
 				SendAnim(ModelAnim.Anim.stand);
-			} else if (distance < 3) {
+			} else if (distance < 2) {
 				SendAnim(ModelAnim.Anim.run);
 			} else {
 				SendAnim(ModelAnim.Anim.dash);
@@ -189,11 +261,13 @@ public class TestCube : MonoBehaviour {
 	/// <summary>
 	/// 네트워크를 통해 받은 다른 캐릭터의 상태 이동 정보를 저장.
 	/// </summary>
-	public void SetPos(Vector3 pos, Quaternion rot) {
+	public void SetPos(Vector3 pos, Quaternion rot, int hp, int maxHp) {
 		virtualVec = pos - exVec;
 		transform.position = exVec;
 		model.transform.rotation = rot;
 		exVec = pos;
+		if (this.maxHp != maxHp) this.maxHp = maxHp;
+		if (Hp != hp) Hp = hp;
 	}
 
 	public IEnumerator movePosition() {
@@ -230,7 +304,7 @@ public class TestCube : MonoBehaviour {
 
 	public IEnumerator sendPosition() {
 		while (true) {
-			PlayerState data = new PlayerState(ClientNetwork.MyNet.myId, transform.position, model.transform.rotation);
+			PlayerState data = new PlayerState(ClientNetwork.MyNet.myId, transform.position, model.transform.rotation, hp, maxHp);
 			string jsonString = JsonUtility.ToJson(data);
 			ClientNetwork.MyNet.Send(new NetPacket(ClassType.PlayerState, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.ChangePlayerData, jsonString));
 			//Debug.Log("myId : " + ClientNetwork.MyNet.myId + ", jsonString : " + jsonString);

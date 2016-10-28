@@ -33,10 +33,14 @@ namespace Chattings {
 				string json = JsonUtility.ToJson(playerChat);
 				NetPacket packet = new NetPacket(ClassType.PlayerChat, ClientNetwork.MyNet.myId, EchoType.NotEcho, NetFunc.Chat, json);
 				ClientNetwork.MyNet.Send(packet);
-				field.text = "";
-				field.Select();
-				field.ActivateInputField();
+				FocusToInputField();
 			}
+		}
+
+		public void FocusToInputField() {
+			field.text = "";
+			field.Select();
+			field.ActivateInputField();
 		}
 
 		public void Print(PlayerChat chat) {
