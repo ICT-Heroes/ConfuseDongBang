@@ -5,15 +5,16 @@ using PenguinModel;
 
 
 public enum NetFunc {
-	Login, Account, ChangePlayerData, Exit, SetId, Success, Failed
+	Login, Account, ChangePlayerData, Exit, SetId, Success, Failed, Create, RequireOtherPlayer, Chat, Attack
 };
 
 public enum EchoType {
 	Echo, NotEcho
 }
 
-public enum DataType{
-    GameInfo,Member,PlayerState, FailInfo, None
+public enum ClassType
+{
+    GameInfo, Member, PlayerState, None, PlayerAnim, PlayerChat, PlayerAttack
 }
 
 public class NetPacket {
@@ -21,10 +22,10 @@ public class NetPacket {
 	public EchoType echoType { get; set; }
     public NetFunc func { get; set; }
     public string jsString { get; set; }
-    public DataType dataType { get; set; }
+    public ClassType classType { get; set; }
 
-    public NetPacket(DataType dataType,int clientID, EchoType echoType, NetFunc func, String jsString){
-		this.dataType = dataType;
+    public NetPacket(ClassType dataType,int clientID, EchoType echoType, NetFunc func, String jsString){
+		this.classType = classType;
 		this.clientId = clientID;
 		this.echoType = echoType;
 		this.func = func;
@@ -44,15 +45,13 @@ public class NetPacket {
     }
 	*/
 
-
-	public override string ToString ()
-	{
-		return string.Format ("{0},{1},{2},{3},{4}", (int)dataType, clientId, (int)echoType, (int)func, jsString);
+	public override string ToString() {
+		return string.Format("{0};{1};{2};{3};{4}", (int)classType, clientId, (int)echoType, (int)func, jsString);
 	}
 
 	public static NetPacket Parse(string str){
-        string[] split = str.Split (',');
-        NetPacket netPacket = new NetPacket ((DataType)int.Parse(split[0]), int.Parse(split[1]), (EchoType)int.Parse(split[2]), (NetFunc)int.Parse(split[3]), split[4]);
+        string[] ss = str.Split (';');
+		NetPacket netPacket = new NetPacket ((ClassType)int.Parse(ss[0]), int.Parse(ss[1]), (EchoType)int.Parse(ss[2]), (NetFunc)int.Parse(ss[3]), ss[4]);
         return netPacket;
 	}
 }
