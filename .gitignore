@@ -10,6 +10,8 @@
 ExportedObj/
 *.unityproj
 *.suo
+*.csproj
+*.sln
 *.tmp
 *.user
 *.userprefs
