@@ -27,7 +27,7 @@ public class NetworkFunctionLibrary : MonoBehaviour {
 	public void Analyze(string netPacketString)
 	{	
 		NetPacket netPacket = JsonUtility.FromJson<NetPacket>(netPacketString);
-		Type dataType = DataParser.getDataType(netPacket.classType);
+		Type classType = DataParser.getDataType(netPacket.classType);
 		StartCoroutine(netPacket.func.ToString(), netPacket);
 	}
 	
