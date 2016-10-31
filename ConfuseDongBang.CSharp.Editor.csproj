@@ -99,10 +99,6 @@
       <Project>{E3279A5C-069D-7095-8336-1182E32D080C}</Project>
       <Name>ConfuseDongBang.CSharp.Plugins</Name>
     </ProjectReference>
-    <ProjectReference Include="ConfuseDongBang.CSharp.csproj">
-      <Project>{0B60B880-DAB0-9531-F0F5-E11418C4AF83}</Project>
-      <Name>ConfuseDongBang.CSharp</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Editor\CrossPlatformInput\CrossPlatformInputInitialize.cs" />

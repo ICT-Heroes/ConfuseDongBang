@@ -60,13 +60,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\ConfuseDongBang.CSharp.csproj">
       <Project>{0b60b880-dab0-9531-f0f5-e11418c4af83}</Project>
       <Name>ConfuseDongBang.CSharp</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
+    <ProjectReference Include="..\..\..\ConfuseDongBang.CSharp.Editor.csproj">
+      <Project>{c5faad68-e7ec-363f-2d68-85e650f24b21}</Project>
+      <Name>ConfuseDongBang.CSharp.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\ConfuseDongBang.CSharp.Plugins.csproj">
+      <Project>{e3279a5c-069d-7095-8336-1182e32d080c}</Project>
+      <Name>ConfuseDongBang.CSharp.Plugins</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
