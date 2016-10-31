@@ -65,12 +65,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="ConfuseDongBang.CSharp.Plugins.csproj">
-      <Project>{E3279A5C-069D-7095-8336-1182E32D080C}</Project>
-      <Name>ConfuseDongBang.CSharp.Plugins</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Assets\Script\Network\ClientNetwork.cs" />
     <Compile Include="Assets\Script\Network\DataParser.cs" />
     <Compile Include="Assets\Script\Network\NetPacket.cs" />

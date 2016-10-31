@@ -160,11 +160,11 @@ namespace ServerNetwork {
 						string recieveString = reader.ReadLine();
 						if (recieveString != null) {
 							NetPacket packet = NetPacket.Parse(recieveString);
-							if (packet.EchoType == EchoType.Echo) {
+							if (packet.echoType == EchoType.Echo) {
 								Server.SendAll(recieveString);
 							}
 							Received.EnqueueThreadSafe(packet);
-							if (packet.Func == NetFunc.Exit) {
+							if (packet.func == NetFunc.Exit) {
 								/*
 								 * 밑에서 같은 동작을 하드라. DeleteClient 에서
                                 for (int i = 0; i < ClientSet.clients.Count; i++) {

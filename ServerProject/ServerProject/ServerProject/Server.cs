@@ -33,36 +33,36 @@ namespace ServerNetwork {
 			PlayerState state, temp;
 			while (Received.GetCount() > 0) {
 				NetPacket str = Received.DequeueThreadSafe();
-				switch (str.Func) {
+				switch (str.func) {
 					case NetFunc.Account:
 						break;
 					case NetFunc.Login:
 						break;
 
 					case NetFunc.RequireOtherPlayer:
-						state = JsonConvert.DeserializeObject<PlayerState>(str.JsString);
-						Console.WriteLine(state.clientId + " 번을 보내달라는 요청을 " + str.ClientID + " 번 에게 받음.");
+						state = JsonConvert.DeserializeObject<PlayerState>(str.jsString);
+						Console.WriteLine(state.clientId + " 번을 보내달라는 요청을 " + str.clientId + " 번 에게 받음.");
 						if (players.TryGetValue(state.clientId, out temp)) {
 							string ss = JsonConvert.SerializeObject(temp);
-							Send(ClassType.PlayerState, str.ClientID, NetFunc.Create, ss);
+							Send(ClassType.PlayerState, str.clientId, NetFunc.Create, ss);
 						} else {
 							Console.WriteLine("근데 실패함.");
 						}
 						break;
 					case NetFunc.ChangePlayerData:
-						state = JsonConvert.DeserializeObject<PlayerState>(str.JsString);
-						if (players.TryGetValue(str.ClientID, out temp)) {
+						state = JsonConvert.DeserializeObject<PlayerState>(str.jsString);
+						if (players.TryGetValue(str.clientId, out temp)) {
 							temp.pos.Copy(state.pos);
 							temp.rot.Copy(state.rot);
 						}
 						break;
 					case NetFunc.Create:
-						state = JsonConvert.DeserializeObject<PlayerState>(str.JsString);
-						players.Add(str.ClientID, state);
-						Console.WriteLine("Create Charic : " + str.ClientID);
+						state = JsonConvert.DeserializeObject<PlayerState>(str.jsString);
+						players.Add(str.clientId, state);
+						Console.WriteLine("Create Charic : " + str.clientId);
 						break;
 					case NetFunc.Chat:
-						SendAll(ClassType.PlayerChat, NetFunc.Chat, str.JsString);
+						SendAll(ClassType.PlayerChat, NetFunc.Chat, str.jsString);
 						break;
 				}
 			}
