@@ -31,12 +31,12 @@ namespace ClientNetwork {
 						break;
 					case NetFunc.ChangePlayerData:      //캐릭터 움직임
 						if(packet.classType == ClassType.PlayerState)
-						CreateManager.instance.SetPos(packet.jsString);
+						CreateManager.instance.SetPos(packet.jsonString);
 						else
-							CreateManager.instance.SetAnim(packet.jsString);
+							CreateManager.instance.SetAnim(packet.jsonString);
 						break;
 					case NetFunc.Create:				//캐릭터 생성
-						CreateManager.instance.CreateCharicter(packet.jsString);
+						CreateManager.instance.CreateCharicter(packet.jsonString);
 						break;
 					case NetFunc.Exit:
 						break;
@@ -49,10 +49,10 @@ namespace ClientNetwork {
 						CreateManager.instance.myCharicter.StartEndOfLoading();
 						break;
 					case NetFunc.Chat:
-						Chattings.Chatting.instance.OnNetwork(packet.jsString);
+						Chattings.Chatting.instance.OnNetwork(packet.jsonString);
 						break;
 					case NetFunc.Attack:
-						CreateManager.instance.CreateAttack(packet.jsString);
+						CreateManager.instance.CreateAttack(packet.jsonString);
 						break;
 				}
 			}

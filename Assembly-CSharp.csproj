@@ -60,7 +60,7 @@
      <Compile Include="Assets\Script\Network\UserData\PlayerState.cs" />
      <Compile Include="Assets\Script\Network\UserData\Quat.cs" />
      <Compile Include="Assets\Script\Network\UserData\Vec3.cs" />
-     <Compile Include="Assets\Script\Scene01. Login\SampleClient.cs" />
+     <Compile Include="Assets\Script\Scene01. Login\LoginManager.cs" />
      <Compile Include="Assets\Script\Scene02. Game\Camera\MainCam.cs" />
      <Compile Include="Assets\Script\Scene02. Game\Charicter\AttackBase.cs" />
      <Compile Include="Assets\Script\Scene02. Game\Charicter\EffectBase.cs" />

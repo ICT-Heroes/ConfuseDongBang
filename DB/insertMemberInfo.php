@@ -6,7 +6,6 @@
         exit;
     }
 
-    $id = $_POST['id'];
     $email_address = $_POST['email_address'];
     $password = $_POST['password'];
     $nick_name = $_POST['nick_name'];

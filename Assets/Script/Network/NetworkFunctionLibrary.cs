@@ -36,7 +36,7 @@ public class NetworkFunctionLibrary : MonoBehaviour {
 
 		string url = "http://minus-one.co.kr/penguin/insertMemberInfo.php";
 
-		Member member = JsonUtility.FromJson<Member> (np.jsString);
+		Member member = JsonUtility.FromJson<Member> (np.jsonString);
 		WWWForm wform = new WWWForm ();
 		wform.AddField("id", member.id);
 		wform.AddField ("password", member.password);
