@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System;
 using System.Net;
 using ClientNetwork;
+using UnityEngine.Experimental.Networking;
 
 
 public class LoginManager : MonoBehaviour{
@@ -28,26 +29,17 @@ public class LoginManager : MonoBehaviour{
 
 	public void OnButtonTouched(){
 
-
-
 		string id = "ThisIsID";
 		Member member = new Member (id);
 		string jsonString = JsonUtility.ToJson (member);
 		NetPacket netPacket = new NetPacket (ClassType.Member, 13579, EchoType.NotEcho, NetFunc.Login, jsonString);
 
-		Debug.Log (netPacket.jsonString);
 		string netPacketString = JsonUtility.ToJson (netPacket);
 		Debug.Log ("js String : " + netPacketString);
 
-		StartCoroutine(Login(jsonString));
-
-		StartCoroutine (DebugIE());
-
-		//Debug.Log(member1.id);
+		StartCoroutine(Login(netPacketString));
 	
 	}
-
-	bool dd;
 
 	IEnumerator Login(string jsonString){
 		WWWForm form = new WWWForm ();
@@ -55,19 +47,13 @@ public class LoginManager : MonoBehaviour{
 		WWW www = new WWW ("http://minus-one.co.kr/penguin/readMemberInfo.php", form);
 		yield return www;
 
-		currentJsonString = www.text;
-		dd = true;
+        if (www.isDone)
+        {
+            currentJsonString = www.text;
+            Debug.Log("currentJsString : " + currentJsonString);
+            //Member member1 = JsonUtility.FromJson<Member>(currentJsonString);
+        }
 	}
 
-	IEnumerator DebugIE(){
-		while (true) {
-			if (dd) {
-				Debug.Log ("currentJsString : " +currentJsonString);
-				Member member1 = JsonUtility.FromJson<Member>(currentJsonString);
-				break;
-			}
-			yield return null;
-		}
-	}
 }
 

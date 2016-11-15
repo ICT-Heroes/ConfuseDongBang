@@ -1,11 +1,9 @@
-<!DOCTYPE HTML>
-
 <?php
     include('connectDB.php');
     $receivedPacket = $_POST['netPacket'];
     $clientId = $_POST['netPacket']['clientId'];
     $id = $_POST['netPacket']['jsonString']['id'];
-    echo "do work : $id";
+    echo $id;
     echo $receivedPacket;
    
     $netPacket = array();
