@@ -5,7 +5,7 @@ using PenguinModel;
 
 
 public enum NetFunc {
-	Login, Account, ChangePlayerData, Exit, SetId, Success, Failed, Create, RequireOtherPlayer, Chat, Attack
+	Login, Account, ChangePlayerData, Exit, SetId, Success, Failed, Create, RequireOtherPlayer, Chat, Attack, ReadMemberInfo
 };
 
 public enum EchoType {
@@ -24,9 +24,9 @@ public class NetPacket {
 	public string jsonString;
 	public ClassType classType;
 
-    public NetPacket(ClassType dataType,int clientID, EchoType echoType, NetFunc func, String jsonString){
+    public NetPacket(ClassType classType,int clientId, EchoType echoType, NetFunc func, String jsonString){
 		this.classType = classType;
-		this.clientId = clientID;
+		this.clientId = clientId;
 		this.echoType = echoType;
 		this.func = func;
 		this.jsonString = jsonString;

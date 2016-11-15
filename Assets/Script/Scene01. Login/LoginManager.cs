@@ -6,7 +6,8 @@ using System;
 using System.Net;
 using ClientNetwork;
 using UnityEngine.Experimental.Networking;
-
+using System.Collections.Generic;
+using System.Text;
 
 public class LoginManager : MonoBehaviour{
 
@@ -15,8 +16,9 @@ public class LoginManager : MonoBehaviour{
 	public InputField nicknameComponent;
 	public InputField emailComponent;
 	private string currentJsonString;
-	// Use this for initialization
-	void Start() {
+    readonly UTF8Encoding encoding = new UTF8Encoding();
+    // Use this for initialization
+    void Start() {
 	}
 
 	// Update is called once per frame
@@ -27,33 +29,35 @@ public class LoginManager : MonoBehaviour{
 	}
 
 
-	public void OnButtonTouched(){
+	public void OnCheckIdButtonTouched(){
 
-		string id = "ThisIsID";
+		string id = "myId";
 		Member member = new Member (id);
 		string jsonString = JsonUtility.ToJson (member);
-		NetPacket netPacket = new NetPacket (ClassType.Member, 13579, EchoType.NotEcho, NetFunc.Login, jsonString);
+		NetPacket netPacket = new NetPacket (ClassType.Member, 13579, EchoType.NotEcho, NetFunc.ReadMemberInfo, jsonString);
 
-		string netPacketString = JsonUtility.ToJson (netPacket);
-		Debug.Log ("js String : " + netPacketString);
-
-		StartCoroutine(Login(netPacketString));
-	
+        CheckIsIdExist(netPacket);
 	}
 
-	IEnumerator Login(string jsonString){
-		WWWForm form = new WWWForm ();
-		form.AddField ("netPacket", jsonString);
-		WWW www = new WWW ("http://minus-one.co.kr/penguin/readMemberInfo.php", form);
-		yield return www;
+	void CheckIsIdExist(NetPacket netPacket){
+        StartCoroutine(NetworkFunctionLibrary.MakeWWWRequest(netPacket, fdsa));
+	}
 
-        if (www.isDone)
-        {
+    void fdsa(WWW www) {
+        if (www.error == null) {
             currentJsonString = www.text;
-            Debug.Log("currentJsString : " + currentJsonString);
-            //Member member1 = JsonUtility.FromJson<Member>(currentJsonString);
+
+            NetPacket netPacket = JsonUtility.FromJson<NetPacket>(currentJsonString);
+            Member member = JsonUtility.FromJson<Member>(netPacket.jsonString);
+            if (member.id.Equals(idComponent.text)) {
+                Debug.Log("이미 존재하는 아이디 입니다.");
+            } else {
+                Debug.Log("사용 가능한 아이디 입니다.");
+            }
+        } else {
+            Debug.Log("Server error :" + www.error);
         }
-	}
+    }
 
 }
 
