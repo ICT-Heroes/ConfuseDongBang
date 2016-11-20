@@ -30,20 +30,21 @@ public class LoginManager : MonoBehaviour{
 
 
 	public void OnCheckIdButtonTouched(){
-
-		string id = "myId";
-		Member member = new Member (id);
-		string jsonString = JsonUtility.ToJson (member);
-		NetPacket netPacket = new NetPacket (ClassType.Member, 13579, EchoType.NotEcho, NetFunc.ReadMemberInfo, jsonString);
-
-        CheckIsIdExist(netPacket);
+        if (idComponent.text.Equals("")) {
+            Debug.Log("아이디를 입력해 주세요");
+        } else {
+            Member member = new Member(idComponent.text);
+            string jsonString = JsonUtility.ToJson(member);
+            NetPacket netPacket = new NetPacket(ClassType.Member, 13579, EchoType.NotEcho, NetFunc.ReadMemberInfo, jsonString);
+            CheckIsIdExist(netPacket);
+        }
 	}
 
 	void CheckIsIdExist(NetPacket netPacket){
-        StartCoroutine(NetworkFunctionLibrary.MakeWWWRequest(netPacket, fdsa));
+        StartCoroutine(NetworkFunctionLibrary.MakeWWWRequest(netPacket, RequestCheckId));
 	}
 
-    void fdsa(WWW www) {
+    void RequestCheckId(WWW www) {
         if (www.error == null) {
             currentJsonString = www.text;
 

@@ -33,8 +33,6 @@ public class NetworkFunctionLibrary : MonoBehaviour {
         Dictionary<String, String> postHeader = new Dictionary<string, string>();
         postHeader.Add("Content-Type", "application/json");
 
-        //WWWForm form = new WWWForm ();
-        //form.AddField ("netPacket", jsonString);
         WWWForm wwwForm = new WWWForm();
         var formData = System.Text.Encoding.UTF8.GetBytes(netPacketString);
         wwwForm.AddField("netPacket", netPacketString, Encoding.UTF8);
@@ -45,7 +43,6 @@ public class NetworkFunctionLibrary : MonoBehaviour {
         {
             func(www);
         }
-       
     }
 
     public static String MakeURL(NetFunc netFunc)
@@ -55,6 +52,7 @@ public class NetworkFunctionLibrary : MonoBehaviour {
             case NetFunc.ReadMemberInfo:
                 return HttpRequestData.PENGUIN_HOST + HttpRequestData.URL_READ_MEMBER_INFO;
             default:
+                Debug.Log("NetworkFunctionLibrary : NetFunc value error");
                 return "";
         }
     }
