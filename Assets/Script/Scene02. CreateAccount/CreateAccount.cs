@@ -1,25 +1,24 @@
 ﻿using UnityEngine;
+using System.Collections;
 using PenguinModel;
 using UnityEngine.UI;
+using System;
+using System.Net;
+using ClientNetwork;
+using UnityEngine.Experimental.Networking;
+using System.Collections.Generic;
 using System.Text;
-using UnityEngine.SceneManagement;
 
-public class LoginManager : MonoBehaviour {
+public class CreateAccount : MonoBehaviour{
 
 	public InputField idComponent;
 	public InputField passwordComponent;
+	public InputField nicknameComponent;
+	public InputField emailComponent;
 	private string currentJsonString;
     readonly UTF8Encoding encoding = new UTF8Encoding();
     // Use this for initialization
     void Start() {
-	}
-
-	private void GoGameScene() {
-		SceneManager.LoadScene("Scene03. Game");
-	}
-
-	private void GoCreateAccountScene() {
-		SceneManager.LoadScene("Scene02. CreateAccount");
 	}
 
 	// Update is called once per frame
