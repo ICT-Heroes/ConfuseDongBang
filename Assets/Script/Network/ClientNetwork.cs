@@ -183,38 +183,4 @@ namespace ClientNetwork {
 			}
 		}
 	}
-
-
-	/*
-	/// <summary>
-	/// 보낼 메세지를 쌓아두는 곳.
-	/// 넣자마자 서버에게 전송된다.
-	/// </summary>
-	class StringWriter {
-		public static Queue<string> buffer = new Queue<string>();
-
-		public void SendString() {
-			while (_MyNet.isServerRun) {
-				if (buffer.Count > 0) {
-					_MyNet._SendString(buffer.Dequeue());
-				}
-			}
-		}
-	}*/
-	/// <summary>
-	/// 보낼 메세지를 쌓아두는 곳.
-	/// 넣자마자 모든 client, 혹은 특정 client 에게 전송된다.
-	/// </summary>
-	class StringWriter {
-		private static string usingMessage = "";
-
-		/// <summary>
-		/// 셋 하자마자 모든 클라이언트 큐에 메세지를 넣는다.
-		/// </summary>
-		public static void Send(string str) {
-			lock (usingMessage) {
-				_MyNet._SendString(str);
-			}
-		}
-	}
 }

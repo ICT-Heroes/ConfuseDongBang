@@ -49,6 +49,10 @@ public class TestCube : MonoBehaviour {
 		virtualVec = Vector3.zero;
 	}
 
+	/// <summary>
+	/// 내꺼에서만 동작하는 함수이다.
+	/// </summary>
+	/// <returns></returns>
 	private IEnumerator deadUpdate() {
 		SendAnim(ModelAnim.Anim.dead);
 		GameObject obj = new GameObject();
@@ -86,25 +90,60 @@ public class TestCube : MonoBehaviour {
 		StartCoroutine(movePosition());
 	}
 
-	public void StartEndOfLoading() {
+	/// <summary>
+	/// * 로딩이 끝나고 처음 시작할 때 동작하는듯.
+	/// * 내 캐릭터에만 동작.
+	/// * 서버로부터 내 id 를 부여받고 동작함.
+	/// </summary>
+	public void StartEndOfLoading(CreateManager.Charic charic, Vector3 pos, Quaternion rot, int hp, int maxHp) {
 		if (id == ClientNetwork.MyNet.myId) {
+			///이것이 내 캐릭이라고 설정하는 변수
 			myCharic = true;
+
+			///메인 캠과 연결.
 			MainCam.instance.SetMyCharicter(gameObject);
+
+			///리지드바디 설정.
 			rigidbody = gameObject.AddComponent<Rigidbody>();
 			rigidbody.freezeRotation = true;
 
-			PlayerState data = new PlayerState(ClientNetwork.MyNet.myId, transform.position, transform.rotation, hp, maxHp);
-			string jsonString = JsonUtility.ToJson(data);
+			///내 처음 위치를 설정
+			transform.position = pos;
+			transform.rotation = rot;
+
+			///내 캐릭터를 설정
+			this.charic = charic;
+			this.hp = hp;
+			this.maxHp = maxHp;
+			SetupCharacterModel();
+
+			///내가 누구인지를 전체에게 보냄
+			UserData.PlayerState state = new UserData.PlayerState(ClientNetwork.MyNet.myId, transform.position, transform.rotation, hp, maxHp, this.charic);
+			string jsonString = JsonUtility.ToJson(state);
 			NetPacket packet = new NetPacket(ClassType.PlayerState, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.Create, jsonString);
 			ClientNetwork.MyNet.Send(packet);
+
+			///어딜 쳐다볼지 알려주는 오브젝트 설정
 			lookAtObj = new GameObject();
 			lookAtObj.transform.SetParent(transform);
 			lookAtObj.transform.localPosition = transform.forward;
+
+			///화면에 프린트되는 스킬 유아이 세팅
 			SkillUI.instance.InitUI(charic);
+			
+			///기본적으로 캐릭터에 붙어있는 hp바 제거 및 화면에 프린트되는 hp UI와 연결
 			Destroy(hpGauge.gameObject);
 			hpGauge = Gauge.MyHpGauge.instance;
+
 		}
 		if (myCharic) StartCoroutine(sendPosition());
+	}
+
+	/// <summary>
+	/// 처음 게임을 실행시킬 때 캐릭터 모델을 생성함과 동시에 세팅해주는 함수
+	/// </summary>
+	private void SetupCharacterModel() {
+
 	}
 
 	private bool GetAttackForward(out Vector3 result) {
@@ -304,7 +343,7 @@ public class TestCube : MonoBehaviour {
 
 	public IEnumerator sendPosition() {
 		while (true) {
-			PlayerState data = new PlayerState(ClientNetwork.MyNet.myId, transform.position, model.transform.rotation, hp, maxHp);
+			UserData.PlayerState data = new UserData.PlayerState(ClientNetwork.MyNet.myId, transform.position, model.transform.rotation, hp, maxHp, charic);
 			string jsonString = JsonUtility.ToJson(data);
 			ClientNetwork.MyNet.Send(new NetPacket(ClassType.PlayerState, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.ChangePlayerData, jsonString));
 			//Debug.Log("myId : " + ClientNetwork.MyNet.myId + ", jsonString : " + jsonString);

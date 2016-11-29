@@ -40,3 +40,7 @@ C:\Users\Redrock2\Documents\ConfuseDongBang-Server\ServerProject\ServerProject\S
 C:\Users\Redrock2\Documents\ConfuseDongBang-Server\ServerProject\ServerProject\ServerProject\bin\Debug\UnityEditor.xml
 C:\Users\Redrock2\Documents\ConfuseDongBang-Server\ServerProject\ServerProject\ServerProject\obj\Debug\ServerProject.exe
 C:\Users\Redrock2\Documents\ConfuseDongBang-Server\ServerProject\ServerProject\ServerProject\obj\Debug\ServerProject.pdb
+C:\Users\hyob\Documents\ConfuseDongBang\ServerProject\ServerProject\ServerProject\bin\Debug\ServerProject.exe.config
+C:\Users\hyob\Documents\ConfuseDongBang\ServerProject\ServerProject\ServerProject\obj\Debug\ServerProject.exe
+C:\Users\hyob\Documents\ConfuseDongBang\ServerProject\ServerProject\ServerProject\obj\Debug\ServerProject.pdb
+C:\Users\hyob\Documents\ConfuseDongBang\ServerProject\ServerProject\ServerProject\obj\Debug\ServerProject.csprojResolveAssemblyReference.cache
