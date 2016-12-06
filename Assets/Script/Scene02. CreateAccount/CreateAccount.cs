@@ -5,9 +5,9 @@ using UnityEngine.UI;
 using System;
 using System.Net;
 using ClientNetwork;
-using UnityEngine.Experimental.Networking;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine.SceneManagement;
 
 public class CreateAccount : MonoBehaviour{
 
@@ -27,7 +27,9 @@ public class CreateAccount : MonoBehaviour{
 			//network.CreateSelf("sample", transform.position);
 		}
 	}
-
+    public void OnCancelButtonTouched() {
+        SceneManager.LoadScene("Scene01. Login");
+    }
 
 	public void OnCheckIdButtonTouched(){
         if (idComponent.text.Equals("")) {

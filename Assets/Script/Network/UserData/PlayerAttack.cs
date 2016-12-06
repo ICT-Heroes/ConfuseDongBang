@@ -5,17 +5,17 @@ using System.Text;
 
 [Serializable]
 class PlayerAttack {
-	public int clientID;
+	public int memberSrl;
 	public int damage;
 	public int character;
 	public int atkNum;
 	public Vec3 pos;
 	public Vec3 target;
 
-	public PlayerAttack(int clientID, CreateManager.Character character, int attackNum, int damage, Vec3 pos, Vec3 target) {
+	public PlayerAttack(int memberSrl, CreateManager.Character character, int attackNum, int damage, Vec3 pos, Vec3 target) {
 		atkNum = attackNum;
 		this.character = (int)character;
-		this.clientID = clientID;
+		this.memberSrl = memberSrl;
 		this.damage = damage;
 		this.pos = pos;
 		this.target = target;

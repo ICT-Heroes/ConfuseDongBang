@@ -7,8 +7,8 @@ public class PlayerAnim {
 	public int anim;
 	public int memberSrl;
 
-	public PlayerAnim(int id, ModelAnim.Anim anim) {
+	public PlayerAnim(int memberSrl, ModelAnim.Anim anim) {
 		this.anim = ModelAnim.ConvertAnimToInt(anim);
-		this.memberSrl = id;
+		this.memberSrl = memberSrl;
 	}
 }

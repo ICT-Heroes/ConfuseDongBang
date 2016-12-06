@@ -43,10 +43,10 @@ namespace ClientNetwork {
 					case NetFunc.Login:
 						break;
 					case NetFunc.SetId:					//처음 접속 시 내 아이디 셋팅
-						MyNet.myId = packet.clientId;
+						MyNet.myId = packet.memberSrl;
 						Debug.Log("내 아이디 바뀜 : " + MyNet.myId);
 						CreateManager.instance.myCharacter.id = MyNet.myId;
-						CreateManager.instance.myCharacter.StartEndOfLoading();
+						CreateManager.instance.myCharacter.OnLoadingEnded(CreateManager.Character.penguin, LoginManager.playerState.pos.ToVector3(), LoginManager.playerState.rot.ToQuaternion(), LoginManager.playerState.hp, LoginManager.playerState.maxHp);
 						break;
 					case NetFunc.Chat:
 						Chattings.Chatting.instance.OnNetwork(packet.jsonString);

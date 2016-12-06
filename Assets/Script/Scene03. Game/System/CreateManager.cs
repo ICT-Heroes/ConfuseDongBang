@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
-using PenguinModel;
+using UserData;
 
 public class CreateManager : MonoBehaviour {
 
@@ -15,7 +15,7 @@ public class CreateManager : MonoBehaviour {
 	public TestCube myCharacter;
 	public Transform testCube;
 	public AttackTransform penguinAttack;
-    public static PenguinModel.PlayerState playerState;
+
 
 
 	public Dictionary<int, TestCube> characters = new Dictionary<int, TestCube>();
@@ -29,13 +29,13 @@ public class CreateManager : MonoBehaviour {
 	/// </summary>
 	public void CreateCharacter(string jsString) {
 		PlayerState state = JsonUtility.FromJson<PlayerState>(jsString);
-		if (state.clientId != ClientNetwork.MyNet.myId) {
-			if (characters.ContainsKey(state.clientId)) return; //이미 생성된 객체에 대해서는 한번 더 생성하지 않는다.
+		if (state.memberSrl != ClientNetwork.MyNet.myId) {
+			if (characters.ContainsKey(state.memberSrl)) return; //이미 생성된 객체에 대해서는 한번 더 생성하지 않는다.
 			Transform newC = (Transform)Instantiate(testCube, state.pos.ToVector3(), state.rot.ToQuaternion());
 			TestCube tc = newC.GetComponent<TestCube>();
-			tc.SetID(state.clientId);
-			characters.Add(state.clientId, tc);
-			Debug.Log("다른놈 캐릭터 생성 : " + state.clientId);
+			tc.SetID(state.memberSrl);
+			characters.Add(state.memberSrl, tc);
+			Debug.Log("다른놈 캐릭터 생성 : " + state.memberSrl);
 		}
 	}
 
@@ -44,7 +44,7 @@ public class CreateManager : MonoBehaviour {
 		Transform newT = (Transform)Instantiate(GettAttackTransform(atk.GetCharacter(), atk.atkNum), atk.pos.ToVector3(), Quaternion.identity);
 		AttackBase attackBase = newT.GetComponent<AttackBase>();
 		attackBase.damage = atk.damage;
-		attackBase.clientID = atk.clientID;
+		attackBase.memberSrl = atk.memberSrl;
 		newT.LookAt(atk.target.ToVector3());
 	}
 
@@ -74,9 +74,9 @@ public class CreateManager : MonoBehaviour {
 	/// </summary>
 	public void SetPos(string jsString) {
 		PlayerState state = JsonUtility.FromJson<PlayerState>(jsString);
-		if (state.clientId != ClientNetwork.MyNet.myId) {
+		if (state.memberSrl != ClientNetwork.MyNet.myId) {
 			TestCube cube;
-			if (characters.TryGetValue(state.clientId, out cube)) {
+			if (characters.TryGetValue(state.memberSrl, out cube)) {
 				cube.SetPos(state.pos.ToVector3(), state.rot.ToQuaternion(), state.hp, state.maxHp);
 			} else {
 				NetPacket packet = new NetPacket(ClassType.PlayerState, ClientNetwork.MyNet.myId, EchoType.NotEcho, NetFunc.RequireOtherPlayer, jsString);
@@ -90,9 +90,9 @@ public class CreateManager : MonoBehaviour {
 	/// </summary>
 	public void SetAnim(string jsString) {
 		PlayerAnim state = JsonUtility.FromJson<PlayerAnim>(jsString);
-		if (state.clientId != ClientNetwork.MyNet.myId) {
+		if (state.memberSrl != ClientNetwork.MyNet.myId) {
 			TestCube cube;
-			if (characters.TryGetValue(state.clientId, out cube)) {
+			if (characters.TryGetValue(state.memberSrl, out cube)) {
 				cube.SetAnim(ModelAnim.ConvertIntToAnim(state.anim));
 			}
 		}
