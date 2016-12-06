@@ -18,15 +18,15 @@ public enum ClassType
 }
 
 public class NetPacket {
-	public int clientId;
+	public int memberSrl;
 	public EchoType echoType;
 	public NetFunc func;
 	public string jsonString;
 	public ClassType classType;
 
-    public NetPacket(ClassType classType,int clientId, EchoType echoType, NetFunc func, String jsonString){
+    public NetPacket(ClassType classType,int memberSrl, EchoType echoType, NetFunc func, String jsonString){
 		this.classType = classType;
-		this.clientId = clientId;
+		this.memberSrl = memberSrl;
 		this.echoType = echoType;
 		this.func = func;
 		this.jsonString = jsonString;
@@ -37,8 +37,8 @@ public class NetPacket {
     }
 
 	/*
-    public NetPacket(int clientID, EchoType type, NetFunc func, string jsString) {
-        this.clientID = clientID;
+    public NetPacket(int memberSrl, EchoType type, NetFunc func, string jsString) {
+        this.memberSrl = memberSrl;
         this.echoType = type;
         this.func = func;
         this.jsString = jsString;
@@ -46,7 +46,7 @@ public class NetPacket {
 	*/
 
 	public override string ToString() {
-		return string.Format("{0};{1};{2};{3};{4}", (int)classType, clientId, (int)echoType, (int)func, jsonString);
+		return string.Format("{0};{1};{2};{3};{4}", (int)classType, memberSrl, (int)echoType, (int)func, jsonString);
 	}
 
 	public static NetPacket Parse(string str){

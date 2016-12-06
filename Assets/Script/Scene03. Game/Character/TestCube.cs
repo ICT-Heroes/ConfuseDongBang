@@ -4,11 +4,11 @@ using System.Collections;
 public class TestCube : MonoBehaviour {
 
 	public int id = -1;
-	bool myCharic = false;
+	bool myCharacter = false;
 	private Vector3 virtualVec, exVec, movingForward, attackForward, currVec;
 	public ModelAnim model;
 
-	public CreateManager.Charic charic = CreateManager.Charic.penguin;
+	public CreateManager.Character Character = CreateManager.Character.penguin;
 
 	private Rigidbody rigidbody;
 	private GameObject lookAtObj;
@@ -88,8 +88,8 @@ public class TestCube : MonoBehaviour {
 
 	public void StartEndOfLoading() {
 		if (id == ClientNetwork.MyNet.myId) {
-			myCharic = true;
-			MainCam.instance.SetMyCharicter(gameObject);
+			myCharacter = true;
+			MainCam.instance.SetMyCharacter(gameObject);
 			rigidbody = gameObject.AddComponent<Rigidbody>();
 			rigidbody.freezeRotation = true;
 
@@ -100,11 +100,11 @@ public class TestCube : MonoBehaviour {
 			lookAtObj = new GameObject();
 			lookAtObj.transform.SetParent(transform);
 			lookAtObj.transform.localPosition = transform.forward;
-			SkillUI.instance.InitUI(charic);
+			SkillUI.instance.InitUI(Character);
 			Destroy(hpGauge.gameObject);
 			hpGauge = Gauge.MyHpGauge.instance;
 		}
-		if (myCharic) StartCoroutine(sendPosition());
+		if (myCharacter) StartCoroutine(sendPosition());
 	}
 
 	private bool GetAttackForward(out Vector3 result) {
@@ -121,7 +121,7 @@ public class TestCube : MonoBehaviour {
 	// Update is called once per frame
 	void Update() {
 		if (!GameSystem.instance.UIMode) {
-			if (myCharic && !dead) {
+			if (myCharacter && !dead) {
 				movingForward = Vector3.zero;
 				if (Input.GetKeyDown("l")) {
 					Hp = 0;
@@ -202,19 +202,19 @@ public class TestCube : MonoBehaviour {
 				switch (num) {
 					case 0:
 						SendAnim(ModelAnim.Anim.attack0);
-						atk = new PlayerAttack(ClientNetwork.MyNet.myId, charic, 0, 100, new Vec3(transform.position), new Vec3(attackForward));
+						atk = new PlayerAttack(ClientNetwork.MyNet.myId, Character, 0, 100, new Vec3(transform.position), new Vec3(attackForward));
 						json = JsonUtility.ToJson(atk);
 						ClientNetwork.MyNet.Send(new NetPacket(ClassType.PlayerAttack, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.Attack, json));
 						break;
 					case 1:
 						SendAnim(ModelAnim.Anim.attack1);
-						atk = new PlayerAttack(ClientNetwork.MyNet.myId, charic, 1, 100, new Vec3(transform.position), new Vec3(attackForward));
+						atk = new PlayerAttack(ClientNetwork.MyNet.myId, Character, 1, 100, new Vec3(transform.position), new Vec3(attackForward));
 						json = JsonUtility.ToJson(atk);
 						ClientNetwork.MyNet.Send(new NetPacket(ClassType.PlayerAttack, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.Attack, json));
 						break;
 					case 2:
 						SendAnim(ModelAnim.Anim.attack2);
-						atk = new PlayerAttack(ClientNetwork.MyNet.myId, charic, 2, 100, new Vec3(transform.position), new Vec3(attackForward));
+						atk = new PlayerAttack(ClientNetwork.MyNet.myId, Character, 2, 100, new Vec3(transform.position), new Vec3(attackForward));
 						json = JsonUtility.ToJson(atk);
 						ClientNetwork.MyNet.Send(new NetPacket(ClassType.PlayerAttack, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.Attack, json));
 						break;
@@ -271,7 +271,7 @@ public class TestCube : MonoBehaviour {
 	}
 
 	public IEnumerator movePosition() {
-		while (!myCharic) {
+		while (!myCharacter) {
 			transform.position += virtualVec * Time.deltaTime * 10;
 			yield return null;
 		}	

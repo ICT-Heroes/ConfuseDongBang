@@ -28,7 +28,7 @@ public class PenguinAttack0 : AttackBase {
 
 	public override void OnAttackSomthingEventEnd(Collider coll) {
 		if (coll.tag.Equals("Player")) {
-			if (coll.GetComponent<TestCube>().id == clientID) return;
+			if (coll.GetComponent<TestCube>().id == memberSrl) return;
 		}
 		CreateEffect(effect2, 1);
 		Destroy(gameObject);

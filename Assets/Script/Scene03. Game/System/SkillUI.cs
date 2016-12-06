@@ -22,7 +22,7 @@ public class SkillUI : MonoBehaviour {
 		instance = this;
 	}
 
-	public void InitUI(CreateManager.Charic charic) {
+	public void InitUI(CreateManager.Character Character) {
 		maxTimer = new float[3];
 		timer = new float[3];
 		s = new bool[3];
@@ -30,8 +30,8 @@ public class SkillUI : MonoBehaviour {
 			timer[i] = 0;
 			s[i] = false;
 		}
-		switch (charic) {
-			case CreateManager.Charic.penguin:
+		switch (Character) {
+			case CreateManager.Character.penguin:
 				images[0].sprite = Resources.Load<Sprite>("Image/penguin/penguin_attack0");
 				images[1].sprite = Resources.Load<Sprite>("Image/penguin/penguin_attack1");
 				images[2].sprite = Resources.Load<Sprite>("Image/penguin/jumpButton");

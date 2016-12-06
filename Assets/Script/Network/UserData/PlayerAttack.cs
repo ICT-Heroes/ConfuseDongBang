@@ -7,22 +7,22 @@ using System.Text;
 class PlayerAttack {
 	public int clientID;
 	public int damage;
-	public int charic;
+	public int character;
 	public int atkNum;
 	public Vec3 pos;
 	public Vec3 target;
 
-	public PlayerAttack(int clientID, CreateManager.Charic charic, int attackNum, int damage, Vec3 pos, Vec3 target) {
+	public PlayerAttack(int clientID, CreateManager.Character character, int attackNum, int damage, Vec3 pos, Vec3 target) {
 		atkNum = attackNum;
-		this.charic = (int)charic;
+		this.character = (int)character;
 		this.clientID = clientID;
 		this.damage = damage;
 		this.pos = pos;
 		this.target = target;
 	}
 
-	public CreateManager.Charic GetCharic() {
-		return (CreateManager.Charic)charic;
+	public CreateManager.Character GetCharacter() {
+		return (CreateManager.Character)character;
 	}
 }
 

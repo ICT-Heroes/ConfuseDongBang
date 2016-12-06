@@ -3,15 +3,15 @@ using System.Collections;
 
 public class AttackBase : MonoBehaviour {
 	public int damage;
-	public int clientID;
+	public int memberSrl;
 	public void OnAttackEnter(Collider coll) {
 		OnAttackSomthingEventStart(coll);
-		if (clientID != ClientNetwork.MyNet.myId) {
+		if (memberSrl != ClientNetwork.MyNet.myId) {
 			if (coll.tag.Equals("Player")) {
 				TestCube tc = coll.GetComponent<TestCube>();
 				if (tc.id == ClientNetwork.MyNet.myId) {
 					tc.Hp -= damage;
-					OnAttackOtherCharicEvent();
+					OnAttackOtherCharacterEvent();
 				}
 			}
 		}
@@ -22,7 +22,7 @@ public class AttackBase : MonoBehaviour {
 	/// 내것과 충돌했을 때만 콜된다.
 	/// 다른 플레이어와 다른 공격 오브젝트가 충돌했을 때는 콜되지 않는다.
 	/// </summary>
-	public virtual void OnAttackOtherCharicEvent() {
+	public virtual void OnAttackOtherCharacterEvent() {
 
 	}
 

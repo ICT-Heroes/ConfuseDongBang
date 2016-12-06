@@ -14,11 +14,11 @@ public class LoginManager : MonoBehaviour {
     void Start() {
 	}
 
-	private void GoGameScene() {
+	public  void GoGameScene() {
 		SceneManager.LoadScene("Scene03. Game");
 	}
 
-	private void GoCreateAccountScene() {
+    public void GoCreateAccountScene() {
 		SceneManager.LoadScene("Scene02. CreateAccount");
 	}
 

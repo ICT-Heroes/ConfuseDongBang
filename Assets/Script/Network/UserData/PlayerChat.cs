@@ -3,12 +3,12 @@ using UnityEngine;
 using System.Text;
 
 public class PlayerChat {
-	public int clientId;
+	public int memberSrl;
 	public string nick;
 	public string text;
 
-	public PlayerChat(int clientId, string nick, string text) {
-		this.clientId = clientId;
+	public PlayerChat(int memberSrl, string nick, string text) {
+		this.memberSrl = memberSrl;
 		this.nick = nick;
 		this.text = text;
 	}

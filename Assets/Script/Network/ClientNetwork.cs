@@ -169,7 +169,7 @@ namespace ClientNetwork {
 					NetPacket packet = NetPacket.Parse(reading);
 					Received.EnqueueThreadSafe(packet);
 					if (packet.func == NetFunc.Exit) {
-						if(packet.clientId < 0)
+						if(packet.memberSrl < 0)
 							break;	//쓰레드를 끝내라는 뜻
 					}
 				}

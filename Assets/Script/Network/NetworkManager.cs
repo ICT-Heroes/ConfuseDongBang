@@ -36,7 +36,7 @@ namespace ClientNetwork {
 							CreateManager.instance.SetAnim(packet.jsonString);
 						break;
 					case NetFunc.Create:				//캐릭터 생성
-						CreateManager.instance.CreateCharicter(packet.jsonString);
+						CreateManager.instance.CreateCharacter(packet.jsonString);
 						break;
 					case NetFunc.Exit:
 						break;
@@ -45,8 +45,8 @@ namespace ClientNetwork {
 					case NetFunc.SetId:					//처음 접속 시 내 아이디 셋팅
 						MyNet.myId = packet.clientId;
 						Debug.Log("내 아이디 바뀜 : " + MyNet.myId);
-						CreateManager.instance.myCharicter.id = MyNet.myId;
-						CreateManager.instance.myCharicter.StartEndOfLoading();
+						CreateManager.instance.myCharacter.id = MyNet.myId;
+						CreateManager.instance.myCharacter.StartEndOfLoading();
 						break;
 					case NetFunc.Chat:
 						Chattings.Chatting.instance.OnNetwork(packet.jsonString);

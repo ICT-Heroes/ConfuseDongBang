@@ -40,7 +40,7 @@ public class MainCam : MonoBehaviour {
 		mainCamY.transform.Rotate(new Vector3(-vec.y * Time.deltaTime * mouseDelta, 0, 0));
 	}
 
-	public void SetMyCharicter(GameObject obj) {
+	public void SetMyCharacter(GameObject obj) {
 		transform.SetParent(obj.transform);
 		transform.localPosition = Vector3.zero;
 		transform.localRotation = Quaternion.identity;
