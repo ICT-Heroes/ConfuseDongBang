@@ -42,25 +42,25 @@ namespace ServerNetwork {
 
 					case NetFunc.RequireOtherPlayer:
 						state = JsonConvert.DeserializeObject<PlayerState>(str.jsonString);
-						Console.WriteLine(state.clientId + " 번을 보내달라는 요청을 " + str.clientId + " 번 에게 받음.");
-						if (players.TryGetValue(state.clientId, out stateTemp)) {
+						Console.WriteLine(state.memberSrl + " 번을 보내달라는 요청을 " + str.memberSrl + " 번 에게 받음.");
+						if (players.TryGetValue(state.memberSrl, out stateTemp)) {
 							string ss = JsonConvert.SerializeObject(stateTemp);
-							Send(ClassType.PlayerState, str.clientId, NetFunc.Create, ss);
+							Send(ClassType.PlayerState, str.memberSrl, NetFunc.Create, ss);
 						} else {
 							Console.WriteLine("근데 실패함.");
 						}
 						break;
 					case NetFunc.ChangePlayerData:
 						state = JsonConvert.DeserializeObject<PlayerState>(str.jsonString);
-						if (players.TryGetValue(str.clientId, out stateTemp)) {
+						if (players.TryGetValue(str.memberSrl, out stateTemp)) {
 							stateTemp.pos.Copy(state.pos);
 							stateTemp.rot.Copy(state.rot);
 						}
 						break;
 					case NetFunc.Create:
 						state = JsonConvert.DeserializeObject<PlayerState>(str.jsonString);
-						players.Add(str.clientId, state);
-						Console.WriteLine("Create Charic : " + str.clientId);
+						players.Add(str.memberSrl, state);
+						Console.WriteLine("Create Charic : " + str.memberSrl);
 						break;
 					case NetFunc.Chat:
 						SendAll(ClassType.PlayerChat, NetFunc.Chat, str.jsonString);
