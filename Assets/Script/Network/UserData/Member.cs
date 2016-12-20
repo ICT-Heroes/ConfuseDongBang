@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace PenguinModel
+namespace UserData
 {
 	public class Member
 	{

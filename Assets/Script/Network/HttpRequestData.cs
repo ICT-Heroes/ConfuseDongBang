@@ -8,4 +8,5 @@ class HttpRequestData
 {
     public static readonly string PENGUIN_HOST = "http://minus-one.co.kr/penguin/";
     public static readonly string URL_READ_MEMBER_INFO = "readMemberInfo.php";
+    public static readonly string URL_CREATE_MEMBER_INFO = "createMemberInfo.php";
 }

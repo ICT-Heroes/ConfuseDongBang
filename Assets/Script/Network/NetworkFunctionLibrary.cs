@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using ClientNetwork;
 using System.Reflection;
 using System;
-using PenguinModel;
+using UserData;
 using System.Text;
 
 
@@ -51,6 +51,8 @@ public class NetworkFunctionLibrary : MonoBehaviour {
         {
             case NetFunc.ReadMemberInfo:
                 return HttpRequestData.PENGUIN_HOST + HttpRequestData.URL_READ_MEMBER_INFO;
+            case NetFunc.CreateMemberInfo:
+                return HttpRequestData.PENGUIN_HOST + HttpRequestData.URL_CREATE_MEMBER_INFO;
             default:
                 Debug.Log("NetworkFunctionLibrary : NetFunc value error");
                 return "";
@@ -65,20 +67,6 @@ public class NetworkFunctionLibrary : MonoBehaviour {
 		NetPacket netPacket = JsonUtility.FromJson<NetPacket>(netPacketString);
 		Type classType = DataParser.getDataType(netPacket.classType);
 		StartCoroutine(netPacket.func.ToString(), netPacket);
-	}
-	
-	public IEnumerator Login(NetPacket np){
-		yield return null;
-
-		string url = "http://minus-one.co.kr/penguin/insertMemberInfo.php";
-
-		Member member = JsonUtility.FromJson<Member> (np.jsonString);
-		WWWForm wform = new WWWForm ();
-		wform.AddField("id", member.id);
-		wform.AddField ("password", member.password);
-
-		WWW www = new WWW (url, wform);
-		StartCoroutine (WaitForRequest (www));
 	}
 
 	IEnumerator WaitForRequest(WWW www) {

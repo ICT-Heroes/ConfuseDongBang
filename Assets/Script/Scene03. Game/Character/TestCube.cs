@@ -13,6 +13,9 @@ public class TestCube : MonoBehaviour {
 	private Rigidbody rigidbody;
 	private GameObject lookAtObj;
 	public CapsuleCollider capsuleCol;
+    public UserData.PlayerState playerState;
+    public UserData.Member memberInfo;
+    public TextMesh userNickname;
 
 	public Gauge.BaseGauge hpGauge;
 
@@ -95,7 +98,7 @@ public class TestCube : MonoBehaviour {
 	/// * 내 캐릭터에만 동작.
 	/// * 서버로부터 내 id 를 부여받고 동작함.
 	/// </summary>
-	public void OnLoadingEnded(CreateManager.Character character, Vector3 pos, Quaternion rot, int hp, int maxHp) {
+	public void OnLoadingEnded(CreateManager.Character character, UserData.Member memberInfo, UserData.PlayerState playerState) {
 		if (id == ClientNetwork.MyNet.myId) {
 			///이것이 내 캐릭이라고 설정하는 변수
 			myCharacter = true;
@@ -108,18 +111,18 @@ public class TestCube : MonoBehaviour {
 			rigidbody.freezeRotation = true;
 
 			///내 처음 위치를 설정
-			transform.position = pos;
-			transform.rotation = rot;
+			transform.position = playerState.pos.ToVector3();
+			transform.rotation = playerState.rot.ToQuaternion();
 
 			///내 캐릭터를 설정
 			this.character = character;
-			this.hp = hp;
-			this.maxHp = maxHp;
+			this.hp = playerState.hp;
+			this.maxHp = playerState.maxHp;
 			SetupCharacterModel();
 
-			///내가 누구인지를 전체에게 보냄
-			UserData.PlayerState state = new UserData.PlayerState(ClientNetwork.MyNet.myId, transform.position, transform.rotation, hp, maxHp, this.character);
-			string jsonString = JsonUtility.ToJson(state);
+            ///내가 누구인지를 전체에게 보냄
+            this.playerState = playerState;
+			string jsonString = JsonUtility.ToJson(playerState);
 			NetPacket packet = new NetPacket(ClassType.PlayerState, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.Create, jsonString);
 			ClientNetwork.MyNet.Send(packet);
 
@@ -343,7 +346,7 @@ public class TestCube : MonoBehaviour {
 
 	public IEnumerator sendPosition() {
 		while (true) {
-			UserData.PlayerState data = new UserData.PlayerState(ClientNetwork.MyNet.myId, transform.position, model.transform.rotation, hp, maxHp, character);
+			UserData.PlayerState data = new UserData.PlayerState(ClientNetwork.MyNet.myId, transform.position, model.transform.rotation, hp, maxHp, character, userNickname.text);
 			string jsonString = JsonUtility.ToJson(data);
 			ClientNetwork.MyNet.Send(new NetPacket(ClassType.PlayerState, ClientNetwork.MyNet.myId, EchoType.Echo, NetFunc.ChangePlayerData, jsonString));
 			//Debug.Log("myId : " + ClientNetwork.MyNet.myId + ", jsonString : " + jsonString);

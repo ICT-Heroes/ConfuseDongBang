@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using ClientNetwork;
 using System.Reflection;
 using System;
-using PenguinModel;
+using UserData;
 
 namespace ClientNetwork {
 
@@ -46,7 +46,7 @@ namespace ClientNetwork {
 						MyNet.myId = packet.memberSrl;
 						Debug.Log("내 아이디 바뀜 : " + MyNet.myId);
 						CreateManager.instance.myCharacter.id = MyNet.myId;
-						CreateManager.instance.myCharacter.OnLoadingEnded(CreateManager.Character.penguin, LoginManager.playerState.pos.ToVector3(), LoginManager.playerState.rot.ToQuaternion(), LoginManager.playerState.hp, LoginManager.playerState.maxHp);
+						CreateManager.instance.myCharacter.OnLoadingEnded(CreateManager.Character.penguin, LoginManager.playerMemberInfo, LoginManager.playerState);
 						break;
 					case NetFunc.Chat:
 						Chattings.Chatting.instance.OnNetwork(packet.jsonString);

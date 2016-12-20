@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using PenguinModel;
+using UserData;
 
 
 public enum NetFunc {
-	Login, Account, ChangePlayerData, Exit, SetId, Success, Failed, Create, RequireOtherPlayer, Chat, Attack, ReadMemberInfo
+	Login, Account, ChangePlayerData, Exit, SetId, Success, Failed, Create, RequireOtherPlayer, Chat, Attack, ReadMemberInfo, CreateMemberInfo
 };
 
 public enum EchoType {
@@ -21,8 +21,9 @@ public class NetPacket {
 	public int memberSrl;
 	public EchoType echoType;
 	public NetFunc func;
-	public string jsonString;
-	public ClassType classType;
+    public ClassType classType;
+    public string jsonString;
+	
 
     public NetPacket(ClassType classType,int memberSrl, EchoType echoType, NetFunc func, String jsonString){
 		this.classType = classType;

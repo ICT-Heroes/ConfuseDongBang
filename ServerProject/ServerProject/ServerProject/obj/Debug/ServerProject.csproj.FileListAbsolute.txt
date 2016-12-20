@@ -65,3 +65,7 @@ C:\Users\hyob\Documents\ConfuseDongBang\ServerProject\ServerProject\ServerProjec
 C:\Users\hyob\Documents\ConfuseDongBang\ServerProject\ServerProject\ServerProject\bin\Debug\UnityEngine.xml
 C:\Users\hyob\Documents\ConfuseDongBang\ServerProject\ServerProject\ServerProject\bin\Debug\UnityEngine.UI.xml
 C:\Users\hyob\Documents\ConfuseDongBang\ServerProject\ServerProject\ServerProject\bin\Debug\UnityEditor.xml
+D:\Git Repos\ConfuseDongBang\ServerProject\ServerProject\ServerProject\bin\Debug\ServerProject.exe.config
+D:\Git Repos\ConfuseDongBang\ServerProject\ServerProject\ServerProject\obj\Debug\ServerProject.exe
+D:\Git Repos\ConfuseDongBang\ServerProject\ServerProject\ServerProject\obj\Debug\ServerProject.pdb
+D:\Git Repos\ConfuseDongBang\ServerProject\ServerProject\ServerProject\obj\Debug\ServerProject.csprojResolveAssemblyReference.cache

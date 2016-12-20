@@ -34,6 +34,7 @@ public class CreateManager : MonoBehaviour {
 			Transform newC = (Transform)Instantiate(testCube, state.pos.ToVector3(), state.rot.ToQuaternion());
 			TestCube tc = newC.GetComponent<TestCube>();
 			tc.SetID(state.memberSrl);
+            tc.userNickname.text = state.nickName;
 			characters.Add(state.memberSrl, tc);
 			Debug.Log("다른놈 캐릭터 생성 : " + state.memberSrl);
 		}
