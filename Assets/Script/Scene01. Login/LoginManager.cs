@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using PenguinModel;
 using UnityEngine.UI;
+using System.Collections;
 using System.Text;
 using UnityEngine.SceneManagement;
 using UserData;
@@ -11,16 +12,39 @@ public class LoginManager : MonoBehaviour {
 	public InputField passwordComponent;
 	private string currentJsonString;
     readonly UTF8Encoding encoding = new UTF8Encoding();
+
+	public Transform Layers;
+
     // Use this for initialization
     void Start() {
 	}
 
 	public  void GoGameScene() {
-		SceneManager.LoadScene("Scene03. Game");
+		StartCoroutine(GoNextScene("Scene03. Game"));
 	}
 
     public void OnJoinButtonTouched() {
-		SceneManager.LoadScene("Scene02. CreateAccount");
+		StartCoroutine(GoNextScene("Scene02. CreateAccount"));
+	}
+
+	IEnumerator GoNextScene(string sceneName) {
+		StartCoroutine(SlideLayers());
+		yield return new WaitForSeconds(2f);
+		SceneManager.LoadScene(sceneName);
+	}
+
+	IEnumerator SlideLayers() {
+		float xx = 0f;
+		while (xx < 0.9f) {
+			Layers.transform.position -= Vector3.right * Screen.width * xx * 0.05f;
+			xx += Time.deltaTime;
+			yield return null;
+		}
+
+		while (true) {
+			Layers.transform.position -= Vector3.right * Screen.width * xx * 0.05f;
+			yield return null;
+		}
 	}
 
 	// Update is called once per frame

@@ -86,8 +86,11 @@
     <Compile Include="Assets\Script\Network\UserData\PlayerState.cs" />
     <Compile Include="Assets\Script\Network\UserData\Quat.cs" />
     <Compile Include="Assets\Script\Network\UserData\Vec3.cs" />
+    <Compile Include="Assets\Script\Scene01. Login\BigQuad.cs" />
     <Compile Include="Assets\Script\Scene01. Login\LoginManager.cs" />
+    <Compile Include="Assets\Script\Scene01. Login\Scene01Main.cs" />
     <Compile Include="Assets\Script\Scene02. CreateAccount\CreateAccount.cs" />
+    <Compile Include="Assets\Script\Scene02. CreateAccount\Scene02Main.cs" />
     <Compile Include="Assets\Script\Scene03. Game\Camera\MainCam.cs" />
     <Compile Include="Assets\Script\Scene03. Game\Character\AttackBase.cs" />
     <Compile Include="Assets\Script\Scene03. Game\Character\EffectBase.cs" />
